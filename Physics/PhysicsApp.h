@@ -25,5 +25,5 @@ protected:
 
 	PhysicsScene* m_physicsScene;
 
-	float m_timer;
+	float m_timer = 0;
 };

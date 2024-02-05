@@ -1,11 +1,10 @@
 ﻿#include "PhysicsScene.h"
-
 #include "PhysicsObject.h"
 
 PhysicsScene::PhysicsScene()
 {
-    setGravity(glm::vec2(0, 0));
     setTimeStep(0.01f);
+    setGravity(glm::vec2(0, 0));
 }
 
 void PhysicsScene::update(float dt)
