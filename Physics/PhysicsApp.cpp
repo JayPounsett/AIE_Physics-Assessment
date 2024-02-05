@@ -5,7 +5,9 @@
 #include "Input.h"
 #include <glm/ext.hpp>
 
-//Removed excess code that existed in project already
+//05-02-2024
+//Removed excess code that existed in project already.
+//If I have issues, check master project.
 
 PhysicsApp::PhysicsApp() {
 
