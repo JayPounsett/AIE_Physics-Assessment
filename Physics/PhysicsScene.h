@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <vector>
 #include <glm/vec2.hpp>
+#include "Sphere.h"
 
 class PhysicsObject;
 
@@ -12,11 +13,7 @@ public:
 
     void addActor(PhysicsObject* actor);
     void removeActor(PhysicsObject* actor);
-
-    // Update physical simulation
     void update(float dt); 
-
-    // Drawing physical objects once per frame
     void draw(); 
 
     void setGravity(const glm::vec2 gravity) { m_gravity = gravity; }
@@ -31,5 +28,7 @@ protected:
 
     // Vector collection that stores all the physical objects in the scene,
     // along with functions to add and remove objects to and from this list.
-    std::vector<PhysicsObject*> m_actors; 
+    std::vector<PhysicsObject*> m_actors;
+
+    static bool sphere2Sphere(PhysicsObject*, PhysicsObject*);
 };
