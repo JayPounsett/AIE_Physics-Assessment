@@ -21,32 +21,12 @@ bool PhysicsApp::startup() {
 	
 	m_font = new aie::Font("./font/consolas.ttf", 32);
 
-	//Initialise the physics scene
-	m_physicsScene = new PhysicsScene();
-	m_physicsScene->setGravity(glm::vec2(0,0));
-	m_physicsScene->setTimeStep(0.01f);
+	////Initialise the physics scene
+	//m_physicsScene = new PhysicsScene();
+	//m_physicsScene->setGravity(glm::vec2(0,0));
+	//m_physicsScene->setTimeStep(0.01f);
 
-#pragma region Disabled Test Actors
-	#pragma region Demonstrating Newton's Third Law
-	//Sphere* ball1 = new Sphere(vec2(-4, 0), vec2(0, 0), 4.0f, 4, vec4(1, 0, 0, 1));
-	//Sphere* ball2 = new Sphere(vec2(4, 0), vec2(0, 0), 4.0f, 4, vec4(0, 1, 0, 1));
-
-	//m_physicsScene->addActor(ball1);
-	//m_physicsScene->addActor(ball2);
-
-	//ball1->applyForceToActor(ball2, vec2(-2, 0));
-	#pragma endregion
-	#pragma region Simulate Collision
-	//Sphere* ball1 = new Sphere(glm::vec2(-20, 0), glm::vec2(0), 4.0f, 4, glm::vec4(1, 0, 0, 1));
-	//Sphere* ball2 = new Sphere(glm::vec2(10, 0), glm::vec2(0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
-
-	//m_physicsScene->addActor(ball1);
-	//m_physicsScene->addActor(ball2);
-
-	//ball1->applyForce(glm::vec2(30, 0));
-	//ball2->applyForce(glm::vec2(-15, 0));
-	#pragma endregion
-	#pragma region Simulating a Rocket Motor
+	//// Simulating a Rocket Motor
 	/*float m = 20.0f;
 	Sphere* rocketMotor = new Sphere(glm::vec2(0,0), glm::vec2(0), m, 3, glm::vec4(1, 0, 0, 1));
 	Sphere* exhaustGas = new Sphere(glm::vec2(0,-4), glm::vec2(0), m, 0.1, glm::vec4(0, 1, 0, 1));
@@ -57,8 +37,8 @@ bool PhysicsApp::startup() {
 		exhaustGas->applyForceToActor(rocketMotor, glm::vec2(0, 0.1));
 		m -= 0.1;
 	}*/
-	#pragma endregion
-#pragma endregion
+
+	setupContinuousDemo(glm::vec2(-40,0), 45, 40, 10);
 
 	return true;
 }
@@ -74,8 +54,8 @@ void PhysicsApp::update(float deltaTime) {
 
 	//aie::Gizmos::clear();
 	
-	m_physicsScene->update(deltaTime);
-	m_physicsScene->draw();
+	//m_physicsScene->update(deltaTime);
+	//m_physicsScene->draw();
 
 	// exit the application
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
@@ -96,7 +76,44 @@ void PhysicsApp::draw() {
 
 	// output some text, uses the last used colour
 	m_2dRenderer->drawText(m_font, "Press ESC to quit", 0, 0);
-
+	
 	// done drawing sprites
 	m_2dRenderer->end();
+}
+
+void PhysicsApp::setupContinuousDemo(glm::vec2 startPos, float inclination, float speed, float gravity)
+{
+	float t = 0;
+	float tStep = 0.5f;
+	float radius = 1.0f;
+	int segments = 12;
+	glm::vec4 colour = glm::vec4(1, 1, 0, 1);
+
+	glm::vec2 currentVelocity;
+	float acceleration = -gravity;
+
+	while (t <= 5) {
+		//Calculate velocity	
+		float velocityX = speed * glm::cos(glm::radians(inclination));
+		float velocityY = speed * glm::sin(glm::radians(inclination));
+
+		glm::vec2 velocity{velocityX, velocityY};
+
+		float dist = speed * t;
+
+		currentVelocity = velocity + acceleration * t;
+
+		
+		
+		//Displacement
+		// -= new x position = initial x position + initial velocity * time =-
+		startPos.x = startPos.x + t * velocity.x;
+
+		// -= new y position = initial y position + initial velocity * time + 1/2 * gravity * time^2 =-
+		startPos.y = (0.5 * acceleration) * glm::exp2(t) + (t * velocity.y) + startPos.y;
+		
+		// draw projectile
+		aie::Gizmos::add2DCircle(startPos, radius, segments, colour);
+		t += tStep;
+	}
 }
