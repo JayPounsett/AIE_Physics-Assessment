@@ -5,10 +5,6 @@
 #include "Input.h"
 #include <glm/ext.hpp>
 
-//05-02-2024
-//Removed excess code that existed in project already.
-//If I have issues, check master project.
-
 PhysicsApp::PhysicsApp() {
 
 }
@@ -30,17 +26,8 @@ bool PhysicsApp::startup() {
 	m_physicsScene->setGravity(glm::vec2(0,0));
 	m_physicsScene->setTimeStep(0.01f);
 
-	/*Sphere* ball;
-	ball = new Sphere(
-		glm::vec2(-40, 0), 
-		glm::vec2(10, 30), 
-		3.0f, 
-		1, 
-		glm::vec4(1, 0, 0, 1));
-
-	m_physicsScene->addActor(ball);*/
-
-	////Demonstrating Newton's Third Law
+#pragma region Disabled Test Actors
+	#pragma region Demonstrating Newton's Third Law
 	//Sphere* ball1 = new Sphere(vec2(-4, 0), vec2(0, 0), 4.0f, 4, vec4(1, 0, 0, 1));
 	//Sphere* ball2 = new Sphere(vec2(4, 0), vec2(0, 0), 4.0f, 4, vec4(0, 1, 0, 1));
 
@@ -48,8 +35,8 @@ bool PhysicsApp::startup() {
 	//m_physicsScene->addActor(ball2);
 
 	//ball1->applyForceToActor(ball2, vec2(-2, 0));
-
-	////Simulate Collision
+	#pragma endregion
+	#pragma region Simulate Collision
 	//Sphere* ball1 = new Sphere(glm::vec2(-20, 0), glm::vec2(0), 4.0f, 4, glm::vec4(1, 0, 0, 1));
 	//Sphere* ball2 = new Sphere(glm::vec2(10, 0), glm::vec2(0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
 
@@ -58,19 +45,21 @@ bool PhysicsApp::startup() {
 
 	//ball1->applyForce(glm::vec2(30, 0));
 	//ball2->applyForce(glm::vec2(-15, 0));
-
-	//Simulating a Rocket Motor
-	Sphere* rocketMotor = new Sphere(glm::vec2(0,0), glm::vec2(0), 1.0f, 4, glm::vec4(1, 0, 0, 1));
-	Sphere* exhaustGas = new Sphere(glm::vec2(0,0), glm::vec2(0), 0.01f, 0.1, glm::vec4(0, 1, 0, 1));
+	#pragma endregion
+	#pragma region Simulating a Rocket Motor
+	/*float m = 20.0f;
+	Sphere* rocketMotor = new Sphere(glm::vec2(0,0), glm::vec2(0), m, 3, glm::vec4(1, 0, 0, 1));
+	Sphere* exhaustGas = new Sphere(glm::vec2(0,-4), glm::vec2(0), m, 0.1, glm::vec4(0, 1, 0, 1));
 	m_physicsScene->addActor(rocketMotor);
 	m_physicsScene->addActor(exhaustGas);
+	
+	while (m > 0) {
+		exhaustGas->applyForceToActor(rocketMotor, glm::vec2(0, 0.1));
+		m -= 0.1;
+	}*/
+	#pragma endregion
+#pragma endregion
 
-	
-	while (rocketMotor->getMass() > 0) {
-		exhaustGas->applyForceToActor(rocketMotor, glm::vec2(0, 0.001));
-		rocketMotor->setMass(rocketMotor->getMass() - 0.1);
-	}
-	
 	return true;
 }
 
@@ -83,7 +72,7 @@ void PhysicsApp::update(float deltaTime) {
 	// input example
 	aie::Input* input = aie::Input::getInstance();
 
-	aie::Gizmos::clear();
+	//aie::Gizmos::clear();
 	
 	m_physicsScene->update(deltaTime);
 	m_physicsScene->draw();

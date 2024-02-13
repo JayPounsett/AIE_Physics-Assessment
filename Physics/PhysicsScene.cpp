@@ -38,23 +38,23 @@ void PhysicsScene::update(float dt)
 
         accumulatedTime -= m_timeStep;
 
-        //// check for collisions (ideally you'd want to have some sort of
-        //// scene management in place
-        //int actorCount = m_actors.size();
-        //
-        ////Need to check for collisions against all objects except this one
-        //for(int outer = 0; outer < actorCount - 1; outer++)
-        //{
-        //    for (int inner = outer + 1; inner < actorCount; inner++)
-        //    {
-        //        PhysicsObject* object1 = m_actors[outer];
-        //        PhysicsObject* object2 = m_actors[inner];
-        //
-        //        //for now we can assume both shapes are spheres,
-        //        //since that is all we've implemented for now
-        //        sphere2Sphere(object1, object2);
-        //    }
-        //}
+        // check for collisions (ideally you'd want to have some sort of
+        // scene management in place
+        int actorCount = m_actors.size();
+        
+        //Need to check for collisions against all objects except this one
+        for(int outer = 0; outer < actorCount - 1; outer++)
+        {
+            for (int inner = outer + 1; inner < actorCount; inner++)
+            {
+                PhysicsObject* object1 = m_actors[outer];
+                PhysicsObject* object2 = m_actors[inner];
+        
+                //for now we can assume both shapes are spheres,
+                //since that is all we've implemented for now
+                sphere2Sphere(object1, object2);
+            }
+        }
     }
 }
 
