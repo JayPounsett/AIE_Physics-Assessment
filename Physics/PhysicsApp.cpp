@@ -17,6 +17,8 @@ bool PhysicsApp::startup() {
 
   m_font = new aie::Font("./font/consolas.ttf", 32);
 
+  setupContinuousDemo(glm::vec2(-40, 0), 45, 40, 10);
+
   ////Initialise the physics scene
   // m_physicsScene = new PhysicsScene();
   // m_physicsScene->setGravity(glm::vec2(0,0));
@@ -34,8 +36,6 @@ bool PhysicsApp::startup() {
 	  exhaustGas->applyForceToActor(rocketMotor, glm::vec2(0, 0.1));
 	  m -= 0.1;
   }*/
-
-  setupContinuousDemo(glm::vec2(-40, 0), 45, 40, 10);
 
   return true;
 }
@@ -87,9 +87,8 @@ void PhysicsApp::setupContinuousDemo(glm::vec2 startPos, float inclination,
   int segments = 12;
   glm::vec4 colour{1, 1, 0, 1}; // Yellow
 
-  glm::vec2 currentVelocity;
-  float acceleration =
-	  -gravity; // Gravity needs to be negative to pull objects downwards
+  // Gravity needs to be negative to pull objects downwards
+  float acceleration = -gravity;
 
   while (t <= 5) {
 	// Calculate velocity (as given speed but not speed over time)

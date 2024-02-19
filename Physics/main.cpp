@@ -1,15 +1,15 @@
 #include "PhysicsApp.h"
 
 int main() {
-	
-	// allocation
-	auto app = new PhysicsApp();
 
-	// initialise and loop
-	app->run("AIE", 1280, 720, false);
+  // allocation
+  auto app = new PhysicsApp();
 
-	// deallocation
-	delete app;
+  // initialise and loop
+  app->run("AIE", 1280, 720, false);
 
-	return 0;
+  // deallocation
+  delete app;
+
+  return 0;
 }
