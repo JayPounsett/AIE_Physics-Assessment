@@ -8,14 +8,8 @@ Sphere::Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius,
   m_colour = colour;
 }
 
-<<<<<<< HEAD
 Sphere::~Sphere() {}
 
 void Sphere::draw() {
   aie::Gizmos::add2DCircle(m_position, m_radius, 12, m_colour, nullptr);
-=======
-void Sphere::draw()
-{
-    aie::Gizmos::add2DCircle(m_position, m_radius, 12, m_colour, nullptr);
->>>>>>> parent of 326e774 (Re-added bootstrap)
 }
