@@ -19,10 +19,22 @@ bool PhysicsApp::startup() {
 
   setupContinuousDemo(glm::vec2(-40, 0), 45, 40, 10);
 
-  ////Initialise the physics scene
-  /*m_physicsScene = new PhysicsScene();
-  m_physicsScene->setGravity(glm::vec2(0,0));
-  m_physicsScene->setTimeStep(0.01f);*/
+  // Initialise the physics scene
+  m_physicsScene = new PhysicsScene();
+  m_physicsScene->setGravity(glm::vec2(0, -10));
+  m_physicsScene->setTimeStep(0.5f);
+
+  float radius = 1.0f;
+  float speed = 30.f;
+  float mass = 1.f;
+  glm::vec4 red{1, 0, 0, 1};
+  glm::vec2 startPos(-40, 0);
+  float inclination = glm::pi<float>() * 0.25f; // 45 degrees
+  float velocityX = speed * glm::cos(glm::radians(inclination));
+  float velocityY = speed * glm::sin(glm::radians(inclination));
+  glm::vec2 velocity{velocityX, velocityY};
+
+  m_physicsScene->addActor(new Sphere(startPos, velocity, mass, radius, red));
 
   //// Simulating a Rocket Motor
   /*float m = 20.0f;
@@ -51,8 +63,8 @@ void PhysicsApp::update(float deltaTime) {
 
   // aie::Gizmos::clear();
 
-  // m_physicsScene->update(deltaTime);
-  //  m_physicsScene->draw();
+  m_physicsScene->update(deltaTime);
+  m_physicsScene->draw();
 
   // exit the application
   if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
@@ -99,8 +111,7 @@ void PhysicsApp::setupContinuousDemo(glm::vec2 startPos, float inclination,
 
   while (t <= 5) {
 	changePos = {startPos.x + velocity.x * t,
-				 startPos.y + velocity.y * t +
-					 0.5f * acceleration.y * t * t};
+				 startPos.y + velocity.y * t + 0.5f * acceleration.y * t * t};
 	// Draw projectile
 	aie::Gizmos::add2DCircle(startPos + changePos, radius, segments, colour);
 	t += tStep;
