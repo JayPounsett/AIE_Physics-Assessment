@@ -20,9 +20,9 @@ bool PhysicsApp::startup() {
   setupContinuousDemo(glm::vec2(-40, 0), 45, 40, 10);
 
   ////Initialise the physics scene
-  // m_physicsScene = new PhysicsScene();
-  // m_physicsScene->setGravity(glm::vec2(0,0));
-  // m_physicsScene->setTimeStep(0.01f);
+  /*m_physicsScene = new PhysicsScene();
+  m_physicsScene->setGravity(glm::vec2(0,0));
+  m_physicsScene->setTimeStep(0.01f);*/
 
   //// Simulating a Rocket Motor
   /*float m = 20.0f;
@@ -52,7 +52,7 @@ void PhysicsApp::update(float deltaTime) {
   // aie::Gizmos::clear();
 
   // m_physicsScene->update(deltaTime);
-  // m_physicsScene->draw();
+  //  m_physicsScene->draw();
 
   // exit the application
   if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
@@ -88,26 +88,21 @@ void PhysicsApp::setupContinuousDemo(glm::vec2 startPos, float inclination,
   glm::vec4 colour{1, 1, 0, 1}; // Yellow
 
   // Gravity needs to be negative to pull objects downwards
-  float acceleration = -gravity;
+  glm::vec2 acceleration = {0, -gravity};
+
+  // Calculate velocity (as given speed but not speed over time)
+  // cos and sin use radians and degrees
+  float velocityX = speed * glm::cos(glm::radians(inclination));
+  float velocityY = speed * glm::sin(glm::radians(inclination));
+  glm::vec2 velocity{velocityX, velocityY};
+  glm::vec2 changePos;
 
   while (t <= 5) {
-	// Calculate velocity (as given speed but not speed over time)
-	float velocityX = speed * glm::cos(glm::radians(inclination));
-	float velocityY = speed * glm::sin(glm::radians(inclination));
-	glm::vec2 velocity{velocityX, velocityY};
-
-	// X-Displacement
-	// xPos = initial x position + initial velocity * time
-	startPos.x = startPos.x + t * velocity.x;
-
-	// Y-Displacement
-	// yPos = initial y position + initial velocity * time + 1/2 * gravity *
-	// time^2
-	startPos.y =
-		(0.5 * acceleration) * glm::exp2(t) + (t * velocity.y) + startPos.y;
-
+	changePos = {startPos.x + velocity.x * t,
+				 startPos.y + velocity.y * t +
+					 0.5f * acceleration.y * t * t};
 	// Draw projectile
-	aie::Gizmos::add2DCircle(startPos, radius, segments, colour);
+	aie::Gizmos::add2DCircle(startPos + changePos, radius, segments, colour);
 	t += tStep;
   }
 }
