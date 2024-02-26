@@ -19,22 +19,35 @@ bool PhysicsApp::startup() {
 
   setupContinuousDemo(glm::vec2(-40, 0), 45, 40, 10);
 
-  // Initialise the physics scene
   m_physicsScene = new PhysicsScene();
   m_physicsScene->setGravity(glm::vec2(0, -10));
   m_physicsScene->setTimeStep(0.5f);
 
-  float radius = 1.0f;
-  float speed = 30.f;
-  float mass = 1.f;
-  glm::vec4 red{1, 0, 0, 1};
-  glm::vec2 startPos(-40, 0);
-  float inclination = glm::pi<float>() * 0.25f; // 45 degrees
+  // Tutorial: Projectile Physics II - Numerical Solution
+  m_physicsScene = new PhysicsScene();
+  m_physicsScene->setGravity(glm::vec2(0, -10));
+  m_physicsScene->setTimeStep(0.5f);
+
+  glm::vec2 const startPosition(-40, 0);
+  float inclination  = 45;
+  float const radius = 1.0f;
+  float const speed  = 30.0f;
+
+  float const mass = 1.0f;
+  glm::vec4 const colourRed{1, 0, 0, 1};
+
+  // Initial Velocity
   float velocityX = speed * glm::cos(glm::radians(inclination));
   float velocityY = speed * glm::sin(glm::radians(inclination));
+  
   glm::vec2 velocity{velocityX, velocityY};
 
-  m_physicsScene->addActor(new Sphere(startPos, velocity, mass, radius, red));
+  printf("Angle: %f\n", inclination);
+  printf("VelocityX: %f\n", velocityX);
+  printf("VelocityX: %f\n", velocityY);
+
+  m_physicsScene->addActor(
+	  new Sphere(startPosition, velocity, mass, radius, colourRed));
 
   //// Simulating a Rocket Motor
   /*float m = 20.0f;
@@ -91,13 +104,13 @@ void PhysicsApp::draw() {
   m_2dRenderer->end();
 }
 
-void PhysicsApp::setupContinuousDemo(glm::vec2 startPos, float inclination,
+void PhysicsApp::setupContinuousDemo(glm::vec2 startPosition, float inclination,
 									 float speed, float gravity) {
   float t = 0;
   float tStep = 0.5f;
   float radius = 1.0f;
   int segments = 12;
-  glm::vec4 colour{1, 1, 0, 1}; // Yellow
+  glm::vec4 colourYellow{1, 1, 0, 1};
 
   // Gravity needs to be negative to pull objects downwards
   glm::vec2 acceleration = {0, -gravity};
@@ -107,13 +120,15 @@ void PhysicsApp::setupContinuousDemo(glm::vec2 startPos, float inclination,
   float velocityX = speed * glm::cos(glm::radians(inclination));
   float velocityY = speed * glm::sin(glm::radians(inclination));
   glm::vec2 velocity{velocityX, velocityY};
-  glm::vec2 changePos;
+  glm::vec2 changePosition;
 
   while (t <= 5) {
-	changePos = {startPos.x + velocity.x * t,
-				 startPos.y + velocity.y * t + 0.5f * acceleration.y * t * t};
+	changePosition = {startPosition.x + velocity.x * t,
+					  startPosition.y + velocity.y * t +
+						  0.5f * acceleration.y * t * t};
 	// Draw projectile
-	aie::Gizmos::add2DCircle(startPos + changePos, radius, segments, colour);
+	aie::Gizmos::add2DCircle(startPosition + changePosition, radius, segments,
+							 colourYellow);
 	t += tStep;
   }
 }
