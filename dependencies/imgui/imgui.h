@@ -1167,7 +1167,7 @@ enum ImGuiInputTextFlags_ {
 
 // Flags for ImGui::TreeNodeEx(), ImGui::CollapsingHeader*()
 enum ImGuiTreeNodeFlags_ {
-  ImGuiTreeNodeFlags_Selected = 1 << 0, // Draw as selected
+  ImGuiTreeNodeFlags_Selected = 1 << 0, // draw as selected
   ImGuiTreeNodeFlags_Framed =
 	  1 << 1, // Full colored frame (e.g. for CollapsingHeader)
   ImGuiTreeNodeFlags_AllowOverlapMode =
@@ -1767,7 +1767,7 @@ struct ImGuiTextFilter {
 	InputBuf[0] = 0;
 	Build();
   }
-  bool Draw(const char *label = "Filter (inc,-exc)",
+  bool draw(const char *label = "Filter (inc,-exc)",
 			float width = 0.0f); // Helper calling InputText+Build
   bool PassFilter(const char *text, const char *text_end = NULL) const;
   bool IsActive() const { return !Filters.empty(); }
@@ -2021,7 +2021,7 @@ struct ImGuiListClipper {
 };
 
 //-----------------------------------------------------------------------------
-// Draw List
+// draw List
 // Hold a series of drawing commands. The user provides a renderer for
 // ImDrawData which essentially contains an array of ImDrawList.
 //-----------------------------------------------------------------------------
@@ -2033,10 +2033,10 @@ struct ImGuiListClipper {
 #define IM_COL32_BLACK (0xFF000000)
 #define IM_COL32_BLACK_TRANS (0x00000000) // Transparent black
 
-// Draw callbacks for advanced uses.
+// draw callbacks for advanced uses.
 // NB- You most likely do NOT need to use draw callbacks just to create your own
 // widget or customized UI rendering (you can poke into the draw list for that)
-// Draw callback may be useful for example, A) Change your GPU render state, B)
+// draw callback may be useful for example, A) Change your GPU render state, B)
 // render a complex 3D scene inside a UI element (without an intermediate
 // texture/render target), etc. The expected behavior from your rendering
 // function is 'if (cmd.UserCallback != NULL) cmd.UserCallback(parent_list,
@@ -2093,7 +2093,7 @@ struct ImDrawVert {
 IMGUI_OVERRIDE_DRAWVERT_STRUCT_LAYOUT;
 #endif
 
-// Draw channels are used by the Columns API to "split" the render list into
+// draw channels are used by the Columns API to "split" the render list into
 // different channels while building, so items of each column can be batched
 // together. You can also use them to simulate drawing layers and submit
 // primitives in a different order than how they will be rendered.
@@ -2102,7 +2102,7 @@ struct ImDrawChannel {
   ImVector<ImDrawIdx> IdxBuffer;
 };
 
-// Draw command list
+// draw command list
 // This is the low-level list of polygons that ImGui functions are filling. At
 // the end of the frame, all command lists are passed to your
 // ImGuiIO::RenderDrawListFn function for rendering. At the moment, each ImGui

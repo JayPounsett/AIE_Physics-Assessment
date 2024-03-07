@@ -1,10 +1,22 @@
 #pragma once
+#include "PhysicsObject.h"
 #include "RigidBody.h"
 
-class Sphere : public RigidBody {
+class Sphere : public RigidBody
+{
 public:
-  Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius,
-		 glm::vec4 colour);
+  Sphere(
+    glm::vec2 position,
+    glm::vec2 velocity,
+    float mass,
+    float radius,
+    glm::vec4 colour)
+    : RigidBody(SPHERE, position, velocity, 0, mass)
+  {
+    m_radius = radius;
+    m_colour = colour;
+  };
+
   ~Sphere();
 
   virtual void draw();

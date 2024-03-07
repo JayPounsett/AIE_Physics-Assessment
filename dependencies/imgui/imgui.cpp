@@ -1849,7 +1849,7 @@ ImGuiTextFilter::ImGuiTextFilter(const char *default_filter) {
   }
 }
 
-bool ImGuiTextFilter::Draw(const char *label, float width) {
+bool ImGuiTextFilter::draw(const char *label, float width) {
   if (width != 0.0f)
 	ImGui::PushItemWidth(width);
   bool value_changed =
@@ -2951,7 +2951,7 @@ static void AddDrawListToRenderList(ImVector<ImDrawList *> &out_render_list,
 	  return;
   }
 
-  // Draw list sanity check. Detect mismatch between PrimReserve() calls and
+  // draw list sanity check. Detect mismatch between PrimReserve() calls and
   // incrementing _VtxCurrentIdx, _VtxWritePtr etc.
   IM_ASSERT(draw_list->_VtxWritePtr ==
 			draw_list->VtxBuffer.Data + draw_list->VtxBuffer.Size);
@@ -3132,7 +3132,7 @@ void ImGui::Render() {
 	  n += layer.Size;
 	}
 
-	// Draw software mouse cursor if requested
+	// draw software mouse cursor if requested
 	if (g.IO.MouseDrawCursor) {
 	  const ImGuiMouseCursorData &cursor_data =
 		  g.MouseCursorData[g.MouseCursor];
@@ -4779,13 +4779,13 @@ bool ImGui::Begin(const char *name, bool *p_open,
 									  GetColorU32(ImGuiCol_ModalWindowDarkening,
 												  g.ModalWindowDarkeningRatio));
 
-	// Draw window + handle manual resize
+	// draw window + handle manual resize
 	ImRect title_bar_rect = window->TitleBarRect();
 	const float window_rounding = (flags & ImGuiWindowFlags_ChildWindow)
 									  ? style.ChildWindowRounding
 									  : style.WindowRounding;
 	if (window->Collapsed) {
-	  // Draw title bar only
+	  // draw title bar only
 	  RenderFrame(title_bar_rect.GetTL(), title_bar_rect.GetBR(),
 				  GetColorU32(ImGuiCol_TitleBgCollapsed), true,
 				  window_rounding);
@@ -7322,7 +7322,7 @@ bool ImGui::SliderBehavior(const ImRect &frame_bb, ImGuiID id, float *v,
   ImGuiWindow *window = GetCurrentWindow();
   const ImGuiStyle &style = g.Style;
 
-  // Draw frame
+  // draw frame
   RenderFrame(frame_bb.Min, frame_bb.Max, GetColorU32(ImGuiCol_FrameBg), true,
 			  style.FrameRounding);
 
@@ -7427,7 +7427,7 @@ bool ImGui::SliderBehavior(const ImRect &frame_bb, ImGuiID id, float *v,
 	grab_t = (ImClamp(*v, v_min, v_max) - v_min) / (v_max - v_min);
   }
 
-  // Draw
+  // draw
   if (!is_horizontal)
 	grab_t = 1.0f - grab_t;
   const float grab_pos =
@@ -7715,7 +7715,7 @@ bool ImGui::DragBehavior(const ImRect &frame_bb, ImGuiID id, float *v,
   ImGuiContext &g = *GImGui;
   const ImGuiStyle &style = g.Style;
 
-  // Draw frame
+  // draw frame
   const ImU32 frame_col =
 	  GetColorU32(g.ActiveId == id    ? ImGuiCol_FrameBgActive
 				  : g.HoveredId == id ? ImGuiCol_FrameBgHovered
@@ -8128,7 +8128,7 @@ void ImGui::PlotEx(ImGuiPlotType plot_type, const char *label,
 	const ImVec2 tp1 = ImVec2(
 		t1, 1.0f - ImSaturate((v1 - scale_min) / (scale_max - scale_min)));
 
-	// NB: Draw calls are merged together by the DrawList system. Still, we
+	// NB: draw calls are merged together by the DrawList system. Still, we
 	// should render our batch are lower level to save a bit of CPU.
 	ImVec2 pos0 = ImLerp(inner_bb.Min, inner_bb.Max, tp0);
 	ImVec2 pos1 =
@@ -9351,7 +9351,7 @@ bool ImGui::InputTextEx(const char *label, char *buf, int buf_size,
 	edit_state.CursorFollow = false;
 	const ImVec2 render_scroll = ImVec2(edit_state.ScrollX, 0.0f);
 
-	// Draw selection
+	// draw selection
 	if (edit_state.StbState.select_start != edit_state.StbState.select_end) {
 	  const ImWchar *text_selected_begin =
 		  text_begin + ImMin(edit_state.StbState.select_start,
@@ -9399,7 +9399,7 @@ bool ImGui::InputTextEx(const char *label, char *buf, int buf_size,
 								   buf_display + edit_state.CurLenA, 0.0f,
 								   is_multiline ? NULL : &clip_rect);
 
-	// Draw blinking cursor
+	// draw blinking cursor
 	bool cursor_is_visible = (g.InputTextState.CursorAnim <= 0.0f) ||
 							 fmodf(g.InputTextState.CursorAnim, 1.20f) <= 0.80f;
 	ImVec2 cursor_screen_pos = render_pos + cursor_offset - render_scroll;
@@ -10834,7 +10834,7 @@ void ImGui::Columns(int columns_count, const char *id, bool border) {
 	window->DC.CursorPos.y = window->DC.ColumnsCellMaxY;
   }
 
-  // Draw columns borders and handle resize at the time of "closing" a columns
+  // draw columns borders and handle resize at the time of "closing" a columns
   // set
   if (window->DC.ColumnsCount != columns_count &&
 	  window->DC.ColumnsCount != 1 && window->DC.ColumnsShowBorders &&
@@ -10853,7 +10853,7 @@ void ImGui::Columns(int columns_count, const char *id, bool border) {
 	  if (hovered || held)
 		g.MouseCursor = ImGuiMouseCursor_ResizeEW;
 
-	  // Draw before resize so our items positioning are in sync with the line
+	  // draw before resize so our items positioning are in sync with the line
 	  // being drawn
 	  const ImU32 col = GetColorU32(held      ? ImGuiCol_ColumnActive
 									: hovered ? ImGuiCol_ColumnHovered

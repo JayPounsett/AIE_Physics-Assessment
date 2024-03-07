@@ -50,7 +50,7 @@ public:
   virtual void drawText(Font *font, const char *text, float xPos, float yPos,
 						float depth = 0.0f);
 
-  // sets the tint colour for all subsequent draw calls
+  // sets the tint m_colour for all subsequent draw calls
   void setRenderColour(float r, float g, float b, float a = 1.0f);
   void setRenderColour(unsigned int colour);
 
@@ -90,7 +90,7 @@ protected:
   // texture coordinate information
   float m_uvX, m_uvY, m_uvW, m_uvH;
 
-  // represents colour in red, green, blue and alpha 0.0-1.0 range
+  // represents m_colour in red, green, blue and alpha 0.0-1.0 range
   float m_r, m_g, m_b, m_a;
 
   // sprite handling
