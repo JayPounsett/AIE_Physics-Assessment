@@ -2,6 +2,13 @@
 #include "PhysicsObject.h"
 #include "glm/glm.hpp"
 
+class Rigidbody;
+
+// The implementation of all of these functions, excepting the draw()
+// function,are all relatively trivial.Because all plane objects will be static,
+// the fixedUpdate() function will be empty. The other functions will simply set
+// various member variables. You should be able to complete these by yourself.
+
 class Plane : public PhysicsObject
 {
 public:
@@ -24,8 +31,10 @@ public:
   virtual void draw();
   virtual void resetPosition(ShapeType PLANE);
 
-  glm::vec2 getNormal() { return m_normal; }
-  float getDistance() { return m_distanceToOrigin; }
+  glm::vec2 getNormal() const { return m_normal; }
+  float getDistance() const { return m_distanceToOrigin; }
+
+  void resolveCollision(Rigidbody* actor2);
 
 protected:
   glm::vec4 m_colour = {0, 0, 0, 0};

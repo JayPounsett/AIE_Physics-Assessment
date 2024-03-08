@@ -108,7 +108,8 @@ bool PhysicsScene::sphere2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
       glm::dot(sphere->getVelocity(), plane->getNormal());
     if (intersection > 0 && velocityOutOfPlane < 0)
     {
-      sphere->applyForce(-sphere->getVelocity() * sphere->getMass());
+      //sphere->applyForce(-sphere->getVelocity() * sphere->getMass());
+      plane->resolveCollision(sphere);
       return true;
     }
   }
@@ -118,20 +119,26 @@ bool PhysicsScene::sphere2Plane(PhysicsObject* obj1, PhysicsObject* obj2)
 bool PhysicsScene::sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2)
 {
   // try to cast objects to sphere and sphere
-  const auto sphere1 = dynamic_cast<Sphere*>(obj1);
-  const auto sphere2 = dynamic_cast<Sphere*>(obj2);
+  Sphere *sphere1 = dynamic_cast<Sphere*>(obj1);
+  Sphere *sphere2 = dynamic_cast<Sphere*>(obj2);
 
   if (sphere1 != nullptr && sphere2 != nullptr)
   {
-    auto dist = glm::distance(sphere1->getPosition(), sphere2->getPosition());
-    auto sum_radii = sphere1->getRadius() + sphere2->getRadius();
+    //auto dist = glm::distance(sphere1->getPosition(), sphere2->getPosition());
+    //auto sum_radii = sphere1->getRadius() + sphere2->getRadius();
 
-    // If the distance is less than the sum of both radii, a collision has
-    // occurred
-    if (dist <= sum_radii)
+    //// If the distance is less than the sum of both radii, a collision has
+    //// occurred
+    //if (dist <= sum_radii)
+    //{
+    //  sphere1->applyForce(-sphere1->getVelocity());
+    //  sphere2->applyForce(-sphere2->getVelocity());
+    //  return true;
+    //}
+    glm::vec2 dist = sphere1->getPosition() - sphere2->getPosition();
+    if (glm::length(dist) < sphere1->getRadius() + sphere2->getRadius())
     {
-      sphere1->applyForce(-sphere1->getVelocity());
-      sphere2->applyForce(-sphere2->getVelocity());
+      sphere1->resolveCollision(sphere2);
       return true;
     }
   }

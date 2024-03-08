@@ -2,7 +2,7 @@
 #include "PhysicsObject.h"
 #include "RigidBody.h"
 
-class Sphere : public RigidBody
+class Sphere : public Rigidbody
 {
 public:
   Sphere(
@@ -11,7 +11,7 @@ public:
     float mass,
     float radius,
     glm::vec4 colour)
-    : RigidBody(SPHERE, position, velocity, 0, mass)
+    : Rigidbody(SPHERE, position, velocity, 0, mass)
   {
     m_radius = radius;
     m_colour = colour;
@@ -23,6 +23,8 @@ public:
 
   float getRadius() { return m_radius; }
   glm::vec4 getColour() { return m_colour; }
+
+  glm::vec2 setVelocity(glm::vec2 velocity) { this->m_velocity = velocity; }
 
 protected:
   float m_radius;
