@@ -74,19 +74,21 @@ bool PhysicsApp::startup()
   m_physicsScene->setTimeStep(0.01f);
   m_physicsScene->setGravity(glm::vec2(0, -9.82f));
 
+  Plane* plane = new Plane(glm::vec2(0, 1), -30, glm::vec4(0, 0, 1, 1));
+
   Sphere* ball1 =
     new Sphere(glm::vec2(-20, 0), glm::vec2(0), 4.0f, 4, glm::vec4(1, 0, 0, 1));
   Sphere* ball2 =
     new Sphere(glm::vec2(10, 0), glm::vec2(0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
-  Plane* plane = new Plane(glm::vec2(0, 1), -30, glm::vec4(0, 0, 1, 1));
 
-  Box* box = new Box(
-    glm::vec2(0,0), glm::vec2(3,3), glm::vec2(0), 4, glm::vec4(1, 0, 0, 1));
+  Box* box1 = new Box(
+    glm::vec2(0, 0), glm::vec2(3), glm::vec2(0), 4, glm::vec4(1, 1, 0, 1));
 
+  
+  m_physicsScene->addActor(plane);
   m_physicsScene->addActor(ball1);
   m_physicsScene->addActor(ball2);
-  m_physicsScene->addActor(plane);
-  m_physicsScene->addActor(box);
+  m_physicsScene->addActor(box1);
 #pragma endregion
 
   return true;

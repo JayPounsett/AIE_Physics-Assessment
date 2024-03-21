@@ -8,5 +8,5 @@ Box::~Box() {}
 void Box::draw()
 {
   aie::Gizmos::add2DAABBFilled(
-    getPosition(), getExtents(), m_colour, &getRotation());
+    getPosition(), getExtents(), m_colour, &glm::mat4(1));
 }

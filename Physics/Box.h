@@ -23,8 +23,8 @@ public:
 
   glm::vec4 getColour() { return m_colour; }
   glm::vec2 getExtents() { return m_extents; };
-  
-  //TODO: Add rotation to add to the draw function
+
+  // TODO: Add rotation to add to the draw function
   float setRotation(float rotation) { m_orientation = rotation; }
   const glm::mat4 getRotation()
   {
