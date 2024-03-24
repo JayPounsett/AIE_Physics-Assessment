@@ -81,14 +81,13 @@ bool PhysicsApp::startup()
   Sphere* ball2 =
     new Sphere(glm::vec2(10, 0), glm::vec2(0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
 
-  Box* box1 = new Box(
-    glm::vec2(0, 0), glm::vec2(3), glm::vec2(0), 4, glm::vec4(1, 1, 0, 1));
+  //Box* box1 = new Box(glm::vec2(0, 0), glm::vec2(3), glm::vec2(0), 4, glm::vec4(1, 1, 0, 1));
 
   
   m_physicsScene->addActor(plane);
   m_physicsScene->addActor(ball1);
   m_physicsScene->addActor(ball2);
-  m_physicsScene->addActor(box1);
+  //m_physicsScene->addActor(box1);
 #pragma endregion
 
   return true;
