@@ -2,54 +2,34 @@
 #include "PhysicsObject.h"
 #include "RigidBody.h"
 
-//class Box : public Rigidbody
-//{
-//public:
-//  Box(
-//    glm::vec2 position,
-//    glm::vec2 extents,
-//    glm::vec2 velocity,
-//    float mass,
-//    glm::vec4 colour)
-//    : Rigidbody(BOX, position, velocity, 0, mass)
-//  {
-//    m_extents = extents;
-//    m_colour = colour;
-//  };
-//
-//  ~Box();
-//
-//  virtual void draw();
-//
-//  glm::vec4 getColour() { return m_colour; }
-//  glm::vec2 getExtents() { return m_extents; };
-//
-//  // TODO: Add rotation to add to the draw function
-//  float setRotation(float rotation) { m_orientation = rotation; }
-//  const glm::mat4 getRotation()
-//  {
-//    return glm::mat4(
-//      1.0f,
-//      0.0f,
-//      0.0f,
-//      0.0f,
-//      0.0f,
-//      1.0f,
-//      0.0f,
-//      0.0f,
-//      0.0f,
-//      0.0f,
-//      1.0f,
-//      0.0f,
-//      0.0f,
-//      0.0f,
-//      0.0f,
-//      m_orientation);
-//  }
-//  glm::vec2 setVelocity(glm::vec2 velocity) { this->m_velocity = velocity; }
-//
-//protected:
-//  glm::vec4 m_colour;
-//  glm::vec2 m_extents;
-//  float m_orientation;
-//};
+class Box : public Rigidbody {
+public:
+  Box(glm::vec2 position, glm::vec2 extents, glm::vec2 velocity, float mass,
+      glm::vec4 colour)
+      : Rigidbody(BOX, position, velocity, 0.0f, mass) {
+    m_extents = extents;
+    m_colour = colour;
+    m_moment = 1.0f / 12.0f * m_mass * m_extents.x * m_extents.y;
+  };
+
+  ~Box();
+
+  void fixedUpdate(glm::vec2 gravity, float timeStep);
+  virtual void draw();
+
+  glm::vec4 getColour() { return m_colour; }
+  glm::vec2 getExtents() { return m_extents; };
+  glm::vec2 getLocalX() { return m_localX; };
+  glm::vec2 getLocalY() { return m_localY; };
+  
+  float getHeight() { return 2.0f * m_extents.y; }
+  float getWidth() { return 2.0f * m_extents.x; }
+
+protected:
+  glm::vec2 m_extents; // the half-edge lengths
+  glm::vec4 m_colour;
+
+  // store the local x,y axes of the box based on its angle of rotation
+  glm::vec2 m_localX = glm::vec2(1, 0);
+  glm::vec2 m_localY = glm::vec2(0, 1);
+};

@@ -2,19 +2,18 @@
 
 #include <glm/ext.hpp>
 
+#include "Box.h"
 #include "Font.h"
 #include "Gizmos.h"
 #include "Input.h"
 #include "Plane.h"
 #include "Texture.h"
-#include "Box.h"
 
 PhysicsApp::PhysicsApp() {}
 
 PhysicsApp::~PhysicsApp() {}
 
-bool PhysicsApp::startup()
-{
+bool PhysicsApp::startup() {
   // increase the 2D line count to maximize the number of objects we can draw
   aie::Gizmos::create(255U, 255U, 65535U, 65535U);
 
@@ -74,35 +73,42 @@ bool PhysicsApp::startup()
   m_physicsScene->setTimeStep(0.01f);
   m_physicsScene->setGravity(glm::vec2(0, -9.82f));
 
-  Plane* plane = new Plane(glm::vec2(0, 1), -30, glm::vec4(0, 0, 1, 1));
+  Plane *plane = new Plane(glm::vec2(0, 1), -30, glm::vec4(0, 0, 1, 1));
 
-  Sphere* ball1 =
-    new Sphere(glm::vec2(-20, 0), glm::vec2(0), 4.0f, 4, glm::vec4(1, 0, 0, 1));
-  Sphere* ball2 =
-    new Sphere(glm::vec2(10, 0), glm::vec2(0), 4.0f, 4, glm::vec4(0, 1, 0, 1));
+  Sphere *ball1 = new Sphere(glm::vec2(-20, 0), glm::vec2(0), 4.0f, 4, 0,
+                             glm::vec4(1, 0, 0, 1));
+  Sphere *ball2 = new Sphere(glm::vec2(10, 0), glm::vec2(0), 4.0f, 4, 0,
+                             glm::vec4(0, 1, 0, 1));
 
-  //Box* box1 = new Box(glm::vec2(0, 0), glm::vec2(3), glm::vec2(0), 4, glm::vec4(1, 1, 0, 1));
+  Box *box1 = new Box(glm::vec2(0), glm::vec2(3), glm::vec2(0), 4.0f,
+                      glm::vec4(1, 1, 0, 1));
 
-  
+  box1->setOrientation(30);
+
+  Box *box2 = new Box(glm::vec2(0, 10), glm::vec2(3), glm::vec2(0), 4.0f,
+                      glm::vec4(1, 0, 1, 1));
+
+  box1->setOrientation(30);
+  box2->setOrientation(45);
+
   m_physicsScene->addActor(plane);
   m_physicsScene->addActor(ball1);
   m_physicsScene->addActor(ball2);
-  //m_physicsScene->addActor(box1);
+  m_physicsScene->addActor(box1);
+  //m_physicsScene->addActor(box2);
 #pragma endregion
 
   return true;
 }
 
-void PhysicsApp::shutdown()
-{
+void PhysicsApp::shutdown() {
   delete m_font;
   delete m_2dRenderer;
 }
 
-void PhysicsApp::update(float deltaTime)
-{
+void PhysicsApp::update(float deltaTime) {
   // input example
-  aie::Input* input = aie::Input::getInstance();
+  aie::Input *input = aie::Input::getInstance();
 
   aie::Gizmos::clear();
 
@@ -110,11 +116,11 @@ void PhysicsApp::update(float deltaTime)
   m_physicsScene->draw();
 
   // exit the application
-  if (input->isKeyDown(aie::INPUT_KEY_ESCAPE)) quit();
+  if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
+    quit();
 }
 
-void PhysicsApp::draw()
-{
+void PhysicsApp::draw() {
   // wipe the screen to the background m_colour
   clearScreen();
 
@@ -123,8 +129,8 @@ void PhysicsApp::draw()
 
   // demonstrate animation
   static float aspectRatio = 16 / 9.f;
-  aie::Gizmos::draw2D(glm::ortho<float>(
-    -100, 100, -100 / aspectRatio, 100 / aspectRatio, -1.0f, 1.0f));
+  aie::Gizmos::draw2D(glm::ortho<float>(-100, 100, -100 / aspectRatio,
+                                        100 / aspectRatio, -1.0f, 1.0f));
 
   // output some text, uses the last used m_colour
   m_2dRenderer->drawText(m_font, "Press ESC to quit", 0, 0);
@@ -133,9 +139,8 @@ void PhysicsApp::draw()
   m_2dRenderer->end();
 }
 
-void PhysicsApp::setupContinuousDemo(
-  glm::vec2 startPosition, float inclination, float speed, float gravity)
-{
+void PhysicsApp::setupContinuousDemo(glm::vec2 startPosition, float inclination,
+                                     float speed, float gravity) {
   float t = 0;
   float tStep = 0.5f;
   float radius = 1.0f;
@@ -152,14 +157,13 @@ void PhysicsApp::setupContinuousDemo(
   glm::vec2 velocity{velocityX, velocityY};
   glm::vec2 changePosition;
 
-  while (t <= 5)
-  {
-    changePosition = {
-      startPosition.x + velocity.x * t,
-      startPosition.y + velocity.y * t + 0.5f * acceleration.y * t * t};
+  while (t <= 5) {
+    changePosition = {startPosition.x + velocity.x * t,
+                      startPosition.y + velocity.y * t +
+                          0.5f * acceleration.y * t * t};
     // draw projectile
-    aie::Gizmos::add2DCircle(
-      startPosition + changePosition, radius, segments, colourYellow);
+    aie::Gizmos::add2DCircle(startPosition + changePosition, radius, segments,
+                             colourYellow);
     t += tStep;
   }
 }
