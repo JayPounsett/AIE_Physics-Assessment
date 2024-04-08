@@ -20,6 +20,7 @@ public:
 
   void fixedUpdate(glm::vec2 gravity, float timeStep);
   void applyForce(glm::vec2 force, glm::vec2 position);
+  // void applyForceToActor(Rigidbody *actor2, glm::vec2 force);
 
   glm::vec2 getPosition() { return m_position; }
   float getOrientation() { return m_orientation; }
@@ -45,10 +46,4 @@ protected:
   float m_orientation = 0.0f;
   float m_angularVelocity = 0.0f;
   float m_moment = 0.0f;
-
-  float m_linearDrag = 0.3f;
-  float m_angularDrag = 0.3f;
-
-  float MIN_LINEAR_THRESHOLD = 0.1f;
-  float MIN_ANGULAR_THRESHOLD = 0.01f;
 };
