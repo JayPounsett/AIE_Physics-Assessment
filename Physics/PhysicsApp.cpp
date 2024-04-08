@@ -138,13 +138,15 @@ void PhysicsApp::cubesOnPlane() {
   Plane* plane = new Plane(glm::vec2(0, 1), -30);
 
   Box* box1 = new Box(
-    glm::vec2(0), glm::vec2(3), glm::vec2(0), 4.0f, glm::vec4(1, 1, 0, 1));
+    glm::vec2(0), glm::vec2(3), glm::vec2(0), 4.0f, 30, glm::vec4(1, 1, 0, 1));
 
   Box* box2 = new Box(
-    glm::vec2(0, 10), glm::vec2(3), glm::vec2(0), 4.0f, glm::vec4(1, 0, 1, 1));
-
-  box1->setOrientation(30);
-  box2->setOrientation(60);
+    glm::vec2(0, 10),
+    glm::vec2(3),
+    glm::vec2(0),
+    4.0f,
+    60,
+    glm::vec4(1, 0, 1, 1));
 
   m_physicsScene->addActor(plane);
   m_physicsScene->addActor(box1);

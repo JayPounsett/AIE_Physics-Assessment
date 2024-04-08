@@ -4,12 +4,23 @@
 
 class Sphere : public Rigidbody {
 public:
-  Sphere(glm::vec2 position, glm::vec2 velocity, float mass, float radius,
-         float orientation, glm::vec4 colour)
-      : Rigidbody(SPHERE, position, velocity, orientation, mass) {
+  Sphere(
+    glm::vec2 position,
+    glm::vec2 velocity,
+    float mass,
+    float radius,
+    float orientation,
+    glm::vec4 colour)
+    : Rigidbody(
+        SPHERE,
+        position,
+        velocity,
+        mass,
+        orientation,
+        m_moment) {
     m_radius = radius;
-    m_colour = colour;
     m_moment = 0.5f * m_mass * radius * radius;
+    m_colour = colour;
   };
 
   ~Sphere();
