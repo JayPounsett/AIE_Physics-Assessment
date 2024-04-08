@@ -3,7 +3,7 @@
 
 #include <glm/vec2.hpp>
 
-#include "Sphere.h"
+//#include "Sphere.h"
 
 class PhysicsObject;
 
@@ -18,7 +18,7 @@ public:
   void update(float dt);
   void draw();
 
-  void setGravity(const glm::vec2 gravity) { this->m_gravity = gravity; }; 
+  void setGravity(glm::vec2 gravity) { this->m_gravity = gravity; } 
   glm::vec2 getGravity() const { return m_gravity; }
 
   void setTimeStep(const float timeStep) { m_timeStep = timeStep; }
@@ -29,6 +29,10 @@ public:
   static bool plane2Box(PhysicsObject*, PhysicsObject*);
   static bool sphere2Plane(PhysicsObject*, PhysicsObject*);
   static bool sphere2Sphere(PhysicsObject*, PhysicsObject*);
+  static bool sphere2Box(PhysicsObject*, PhysicsObject*);
+  static bool box2Plane(PhysicsObject*, PhysicsObject*);
+  static bool box2Sphere(PhysicsObject*, PhysicsObject*);
+  static bool box2Box(PhysicsObject*, PhysicsObject*);
 
 protected:
   glm::vec2 m_gravity;

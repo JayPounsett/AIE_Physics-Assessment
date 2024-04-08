@@ -7,6 +7,7 @@
 #include "Gizmos.h"
 #include "Input.h"
 #include "Plane.h"
+#include "Sphere.h"
 #include "Texture.h"
 
 PhysicsApp::PhysicsApp() {}
@@ -21,82 +22,15 @@ bool PhysicsApp::startup() {
 
   m_font = new aie::Font("./font/consolas.ttf", 32);
 
-#pragma region INACTIVE - Tutorial: Simulating a Rocket Motor
-//// Simulating a Rocket Motor
-// float m = 20.0f;
-// Sphere* rocketMotor = new Sphere(glm::vec2(0,0), glm::vec2(0), m, 3,
-// glm::vec4(1, 0, 0, 1)); Sphere* exhaustGas = new Sphere(glm::vec2(0,-4),
-// glm::vec2(0), m, 0.1, glm::vec4(0, 1, 0, 1));
-// m_physicsScene->addActor(rocketMotor);
-// m_physicsScene->addActor(exhaustGas);
-//
-// while (m > 0) {
-//         exhaustGas->applyForceToActor(rocketMotor, glm::vec2(0, 0.1));
-//         m -= 0.1;
-// }
-#pragma endregion
-
-#pragma region INACTIVE - Tutorial: Projectile Physics I - Analytical Solution
-//// Tutorial: Projectile Physics I - Analytical Solution
-// setupContinuousDemo(glm::vec2(-40, 0), 45, 40, 10);
-#pragma endregion
-
-#pragma region INACTIVE - Tutorial: Projectile Physics II - Numerical Solution
-//// Tutorial: Projectile Physics II - Numerical Solution
-// m_physicsScene = new PhysicsScene();
-// m_physicsScene->setGravity(glm::vec2(0, -10));
-
-// glm::vec2 const startPosition(-40, 0);
-// float inclination = 45;
-// float const radius = 1.0f;
-// float const speed = 30.0f;
-
-// float const mass = 1.0f;
-// glm::vec4 const colourRed{1, 0, 0, 1};
-
-//// Initial Velocity
-// float velocityX = speed * glm::cos(glm::radians(inclination));
-// float velocityY = speed * glm::sin(glm::radians(inclination));
-
-// glm::vec2 velocity{velocityX, velocityY};
-
-// printf("Angle: %f\n", inclination);
-// printf("VelocityX: %f\n", velocityX);
-// printf("VelocityX: %f\n", velocityY);
-
-// m_physicsScene->addActor(
-//   new Sphere(startPosition, velocity, mass, radius, colourRed));
-#pragma endregion
-
-#pragma region Tutorial: Collision Detection (Sphere-to-Plane Collision)
   m_physicsScene = new PhysicsScene();
   m_physicsScene->setTimeStep(0.01f);
-  m_physicsScene->setGravity(glm::vec2(0, -9.82f));
 
-  Plane *plane = new Plane(glm::vec2(0, 1), -30, glm::vec4(0, 0, 1, 1));
+  // setupContinuousDemo(glm::vec2(-40, 0), 45, 40, 10);
+  // projectilePhysicsNumerical();
+  // ballsOnPlane();
+  // newtonsCradle();
+  cubesOnPlane();
 
-  Sphere *ball1 = new Sphere(glm::vec2(-20, 0), glm::vec2(0), 4.0f, 4, 0,
-                             glm::vec4(1, 0, 0, 1));
-  Sphere *ball2 = new Sphere(glm::vec2(10, 0), glm::vec2(0), 4.0f, 4, 0,
-                             glm::vec4(0, 1, 0, 1));
-
-  Box *box1 = new Box(glm::vec2(0), glm::vec2(3), glm::vec2(0), 4.0f,
-                      glm::vec4(1, 1, 0, 1));
-
-  box1->setOrientation(30);
-
-  Box *box2 = new Box(glm::vec2(0, 10), glm::vec2(3), glm::vec2(0), 4.0f,
-                      glm::vec4(1, 0, 1, 1));
-
-  box1->setOrientation(30);
-  box2->setOrientation(45);
-
-  m_physicsScene->addActor(plane);
-  m_physicsScene->addActor(ball1);
-  m_physicsScene->addActor(ball2);
-  m_physicsScene->addActor(box1);
-  //m_physicsScene->addActor(box2);
-#pragma endregion
 
   return true;
 }
@@ -108,7 +42,7 @@ void PhysicsApp::shutdown() {
 
 void PhysicsApp::update(float deltaTime) {
   // input example
-  aie::Input *input = aie::Input::getInstance();
+  aie::Input* input = aie::Input::getInstance();
 
   aie::Gizmos::clear();
 
@@ -116,8 +50,7 @@ void PhysicsApp::update(float deltaTime) {
   m_physicsScene->draw();
 
   // exit the application
-  if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
-    quit();
+  if (input->isKeyDown(aie::INPUT_KEY_ESCAPE)) quit();
 }
 
 void PhysicsApp::draw() {
@@ -129,8 +62,8 @@ void PhysicsApp::draw() {
 
   // demonstrate animation
   static float aspectRatio = 16 / 9.f;
-  aie::Gizmos::draw2D(glm::ortho<float>(-100, 100, -100 / aspectRatio,
-                                        100 / aspectRatio, -1.0f, 1.0f));
+  aie::Gizmos::draw2D(glm::ortho<float>(
+    -100, 100, -100 / aspectRatio, 100 / aspectRatio, -1.0f, 1.0f));
 
   // output some text, uses the last used m_colour
   m_2dRenderer->drawText(m_font, "Press ESC to quit", 0, 0);
@@ -139,8 +72,87 @@ void PhysicsApp::draw() {
   m_2dRenderer->end();
 }
 
-void PhysicsApp::setupContinuousDemo(glm::vec2 startPosition, float inclination,
-                                     float speed, float gravity) {
+void PhysicsApp::newtonsCradle() {
+  m_physicsScene->setGravity(glm::vec2(0));
+
+  m_physicsScene->addActor(new Plane(glm::vec2(1, 0), -50));
+  m_physicsScene->addActor(new Plane(glm::vec2(-1, 0), -50));
+
+  // basic Newton's Cradle - 5 balls of equal mass
+  m_physicsScene->addActor(new Sphere(
+    glm::vec2(-30, 20), glm::vec2(10, 0), 1.0f, 5, 0, glm::vec4(1, 0, 0, 1)));
+  m_physicsScene->addActor(new Sphere(
+    glm::vec2(0, 20), glm::vec2(0, 0), 1.0f, 5, 0, glm::vec4(1, 0, 0, 1)));
+  m_physicsScene->addActor(new Sphere(
+    glm::vec2(10, 20), glm::vec2(0, 0), 1.0f, 5, 0, glm::vec4(1, 0, 0, 1)));
+  m_physicsScene->addActor(new Sphere(
+    glm::vec2(20, 20), glm::vec2(0, 0), 1.0f, 5, 0, glm::vec4(1, 0, 0, 1)));
+  m_physicsScene->addActor(new Sphere(
+    glm::vec2(30, 20), glm::vec2(0, 0), 1.0f, 5, 0, glm::vec4(1, 0, 0, 1)));
+}
+
+void PhysicsApp::projectilePhysicsNumerical() {
+  m_physicsScene = new PhysicsScene();
+  m_physicsScene->setGravity(glm::vec2(0, -10));
+
+  glm::vec2 const startPosition(-40, 0);
+  float inclination = 45;
+  float const radius = 1.0f;
+  float const speed = 30.0f;
+
+  float const mass = 1.0f;
+  glm::vec4 const colourRed{1, 0, 0, 1};
+
+  // Initial Velocity
+  float velocityX = speed * glm::cos(glm::radians(inclination));
+  float velocityY = speed * glm::sin(glm::radians(inclination));
+
+  glm::vec2 velocity{velocityX, velocityY};
+
+  printf("Angle: %f\n", inclination);
+  printf("VelocityX: %f\n", velocityX);
+  printf("VelocityX: %f\n", velocityY);
+
+  m_physicsScene->addActor(
+    new Sphere(startPosition, velocity, mass, radius, 0, colourRed));
+}
+
+void PhysicsApp::ballsOnPlane() {
+  m_physicsScene->setGravity(glm::vec2(0, -9.82f));
+
+  Plane* plane = new Plane(glm::vec2(0, 1), -30);
+
+  Sphere* ball1 = new Sphere(
+    glm::vec2(-20, 0), glm::vec2(0), 4.0f, 4, 0, glm::vec4(1, 0, 0, 1));
+  Sphere* ball2 = new Sphere(
+    glm::vec2(10, 0), glm::vec2(0), 4.0f, 4, 0, glm::vec4(0, 1, 0, 1));
+
+  m_physicsScene->addActor(plane);
+  m_physicsScene->addActor(ball1);
+  m_physicsScene->addActor(ball2);
+}
+
+void PhysicsApp::cubesOnPlane() {
+  m_physicsScene->setGravity(glm::vec2(0, -9.82f));
+
+  Plane* plane = new Plane(glm::vec2(0, 1), -30);
+
+  Box* box1 = new Box(
+    glm::vec2(0), glm::vec2(3), glm::vec2(0), 4.0f, glm::vec4(1, 1, 0, 1));
+
+  Box* box2 = new Box(
+    glm::vec2(0, 10), glm::vec2(3), glm::vec2(0), 4.0f, glm::vec4(1, 0, 1, 1));
+
+  box1->setOrientation(30);
+  box2->setOrientation(60);
+
+  m_physicsScene->addActor(plane);
+  m_physicsScene->addActor(box1);
+  m_physicsScene->addActor(box2);
+}
+
+void PhysicsApp::setupContinuousDemo(
+  glm::vec2 startPosition, float inclination, float speed, float gravity) {
   float t = 0;
   float tStep = 0.5f;
   float radius = 1.0f;
@@ -158,12 +170,12 @@ void PhysicsApp::setupContinuousDemo(glm::vec2 startPosition, float inclination,
   glm::vec2 changePosition;
 
   while (t <= 5) {
-    changePosition = {startPosition.x + velocity.x * t,
-                      startPosition.y + velocity.y * t +
-                          0.5f * acceleration.y * t * t};
+    changePosition = {
+      startPosition.x + velocity.x * t,
+      startPosition.y + velocity.y * t + 0.5f * acceleration.y * t * t};
     // draw projectile
-    aie::Gizmos::add2DCircle(startPosition + changePosition, radius, segments,
-                             colourYellow);
+    aie::Gizmos::add2DCircle(
+      startPosition + changePosition, radius, segments, colourYellow);
     t += tStep;
   }
 }

@@ -16,8 +16,15 @@ public:
   virtual void update(float deltaTime);
   virtual void draw();
 
+  // Simulations
   void setupContinuousDemo(
     glm::vec2 startPosition, float inclination, float speed, float gravity);
+
+  void projectilePhysicsNumerical();
+  void ballsOnPlane();
+  void newtonsCradle();
+  void cubesOnPlane();
+  
 
 protected:
   aie::Renderer2D* m_2dRenderer;

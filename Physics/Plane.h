@@ -12,12 +12,11 @@ class Rigidbody;
 class Plane : public PhysicsObject
 {
 public:
-  Plane(glm::vec2 normal, float distance, glm::vec4 colour)
+  Plane(glm::vec2 normal, float distance)
     : PhysicsObject::PhysicsObject(PLANE)
   {
     this->m_normal = normal;
     this->m_distanceToOrigin = distance;
-    this->m_colour = colour;
   };
 
   Plane() : PhysicsObject(ShapeType::PLANE)
@@ -38,7 +37,7 @@ public:
     Rigidbody* actor2, glm::vec2 contact);
 
 protected:
-  glm::vec4 m_colour = {0, 0, 0, 0};
+  glm::vec4 m_colour = glm::vec4(0, 0, 1, 1);
   glm::vec2 m_normal = glm::vec2(0, 1);
-  float m_distanceToOrigin = 0.f;
+  float m_distanceToOrigin = 0.0f;
 };
