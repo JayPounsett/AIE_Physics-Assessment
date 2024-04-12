@@ -17,7 +17,7 @@ protected:
 public:
   virtual void fixedUpdate(glm::vec2 gravity, float timeStep) = 0;
   virtual void draw() = 0;
-  virtual void resetPosition() {}
+  
   int getShapeID() const { return m_shapeID; }
   float getElasticity() const { return m_elasticity; }
 
