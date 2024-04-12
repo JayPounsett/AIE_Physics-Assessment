@@ -27,12 +27,12 @@ public:
   
 
 protected:
-  aie::Renderer2D* m_2dRenderer;
-  aie::Texture* m_texture;
-  aie::Texture* m_shipTexture;
-  aie::Font* m_font;
+  aie::Renderer2D* m_2dRenderer = nullptr;
+  aie::Texture* m_texture = nullptr;
+  aie::Texture* m_shipTexture = nullptr;
+  aie::Font* m_font = nullptr;
 
-  PhysicsScene* m_physicsScene;
+  PhysicsScene* m_physicsScene = nullptr;
 
   float m_timer = 0;
 };

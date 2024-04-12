@@ -46,6 +46,8 @@ public:
   glm::vec2 getPosition() const { return m_position; }
   glm::vec2 getVelocity() const { return m_velocity; }
 
+
+
 protected:
   glm::vec2 m_position{0, 0};
   glm::vec2 m_velocity{0, 0};

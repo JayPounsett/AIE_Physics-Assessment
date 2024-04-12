@@ -11,16 +11,16 @@ public:
     float mass,
     float elasticity,
     glm::vec4 colour)
-    : Rigidbody(BOX,
-                position,
-                velocity,
-                mass,
-                elasticity,
-                0.0f,
-                m_moment) {
+    : Rigidbody(
+        BOX,
+        position,
+        velocity,
+        mass,
+        elasticity,
+        0.0f,
+        0.5f * mass * (2 * extents.x) * (2 * extents.y)) {
     m_extents = extents;
     m_colour = colour;
-    m_moment = setMoment();
   };
 
   ~Box();
@@ -45,6 +45,7 @@ public:
   float getOrientation() const { return m_orientation; }
   glm::vec2 getPosition() const { return m_position; }
 
+
   float getHeight() const { return 2.0f * m_extents.y; }
   float getWidth() const { return 2.0f * m_extents.x; }
 
@@ -52,8 +53,6 @@ public:
   float setOrientation(float angle) {
     return m_orientation = angle * glm::pi<float>() / 180;
   }
-
-  float setMoment() { return m_moment = 1.0f / 12.0f * m_mass * getWidth() * getHeight(); }
 
 protected:
   glm::vec2 m_extents{}; // the half-edge lengths
