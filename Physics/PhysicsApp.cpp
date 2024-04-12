@@ -29,9 +29,9 @@ bool PhysicsApp::startup() {
 
   // setupContinuousDemo(glm::vec2(-40, 0), 45, 40, 10);
   // projectilePhysicsNumerical();
-  dropBalls();
+  // dropBalls();
   // newtonsCradle();
-  // dropCubes();
+  dropCubes();
   // dropBallsAndCubes();
 
   return true;
@@ -151,14 +151,15 @@ void PhysicsApp::dropBalls() {
   Plane* plane = new Plane(glm::vec2(0, 1), -30, 0.6f);
 
   Sphere* ball1 = new Sphere(
-    glm::vec2(0, 20),
+    glm::vec2(-45, 20),
     glm::vec2(0),
     10.0f,
     4,
     0.8f,
     glm::vec4(1, 0, 0, 1));
+
   Sphere* ball2 = new Sphere(
-    glm::vec2(-1, 30),
+    glm::vec2(-50, 30),
     glm::vec2(0),
     10.0f,
     4,

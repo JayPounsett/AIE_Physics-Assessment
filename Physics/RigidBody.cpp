@@ -10,7 +10,7 @@ Rigidbody::~Rigidbody() {}
 
 void Rigidbody::fixedUpdate(glm::vec2 gravity, float timeStep) {
   m_position += m_velocity * timeStep;
-  applyForce(gravity * m_mass * timeStep, m_position);
+  applyForce(gravity * m_mass * timeStep, glm::vec2(0));
 
   m_orientation += m_angularVelocity * timeStep;
 
@@ -38,7 +38,7 @@ void Rigidbody::applyForce(glm::vec2 force, glm::vec2 position) {
   }
 
   m_angularVelocity +=
-    (force.y * position.x - force.x * position.y) / getMoment();
+    (force.y * position.x + force.x * position.y) / getMoment();
 }
 
 void Rigidbody::resolveCollision(

@@ -42,18 +42,13 @@ float getKineticEnergy() {
     if (m_mass != 0)
       return m_mass;
     else
-      return 1;
+      return 0.1f;
   }
 
   float getMoment() const { return m_moment; }
   glm::vec2 getPosition() const { return m_position; }
   float getOrientation() const { return m_orientation; }
   glm::vec2 getVelocity() const { return m_velocity; }
-
-  // float getPotentialEnergy() {
-  //   PhysicsScene scene;
-  //   return -getMass() * glm::dot(scene.getGravity(), getPosition());
-  // };
 
 protected:
   glm::vec2 m_position{0, 0};
