@@ -12,11 +12,12 @@ class Rigidbody;
 class Plane : public PhysicsObject
 {
 public:
-  Plane(glm::vec2 normal, float distance)
+  Plane(glm::vec2 normal, float distance, float elasticity)
     : PhysicsObject::PhysicsObject(PLANE)
   {
     this->m_normal = normal;
     this->m_distanceToOrigin = distance;
+    this->m_elasticity = elasticity;
   };
 
   Plane() : PhysicsObject(ShapeType::PLANE)

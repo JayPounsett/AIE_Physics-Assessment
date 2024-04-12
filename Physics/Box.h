@@ -10,8 +10,16 @@ public:
     glm::vec2 velocity,
     float mass,
     float angle,
+    float elasticity,
     glm::vec4 colour)
-    : Rigidbody(BOX, position, velocity, mass, m_orientation, m_moment) {
+    : Rigidbody(
+        BOX,
+        position,
+        velocity,
+        mass,
+        elasticity,
+        m_orientation,
+        m_moment) {
     m_extents = extents;
     m_colour = colour;
     m_moment = 1.0f / 12.0f * m_mass * m_extents.x * m_extents.y;
@@ -33,6 +41,7 @@ public:
   glm::vec2 getExtents() const { return m_extents; }
   glm::vec2 getLocalX() const { return m_localX; }
   glm::vec2 getLocalY() const { return m_localY; }
+  glm::vec2 getPosition() const { return m_position; }
 
   float getMoment() { return m_moment; }
 

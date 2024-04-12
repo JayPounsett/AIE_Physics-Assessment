@@ -9,18 +9,14 @@ public:
     glm::vec2 velocity,
     float mass,
     float radius,
-    float orientation,
+    float elasticity,
     glm::vec4 colour)
     : Rigidbody(
-        SPHERE,
-        position,
-        velocity,
-        mass,
-        orientation,
-        m_moment) {
+        SPHERE, position, velocity, mass, elasticity, m_orientation = 0.0f, m_moment) {
     m_radius = radius;
-    m_moment = 0.5f * m_mass * radius * radius;
     m_colour = colour;
+    
+    m_moment = 0.5f * m_mass * radius * radius;
   };
 
   ~Sphere();

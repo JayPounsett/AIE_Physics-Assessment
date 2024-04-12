@@ -19,11 +19,11 @@ public:
   // Simulations
   void setupContinuousDemo(
     glm::vec2 startPosition, float inclination, float speed, float gravity);
-
   void projectilePhysicsNumerical();
-  void ballsOnPlane();
+  void dropBalls();
   void newtonsCradle();
-  void cubesOnPlane();
+  void dropCubes();
+  void dropBallsAndCubes();
   
 
 protected:

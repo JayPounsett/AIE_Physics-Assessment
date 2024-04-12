@@ -11,6 +11,7 @@ public:
     glm::vec2 position,
     glm::vec2 velocity,
     float mass,
+    float elasticity,
     float orientation,
     float moment)
     : PhysicsObject(shapeID) {
@@ -18,6 +19,7 @@ public:
     m_position = position;
     m_velocity = velocity;
     m_mass = mass;
+    m_elasticity = elasticity;
     m_orientation = orientation;
     m_moment = moment;
   };
@@ -26,14 +28,14 @@ public:
 
   void fixedUpdate(glm::vec2 gravity, float timeStep);
   void applyForce(glm::vec2 force, glm::vec2 position);
-
+  
   glm::vec2 getPosition() const { return m_position; }
-  float getOrientation() { return m_orientation; }
-  glm::vec2 getVelocity() { return m_velocity; }
+  float getOrientation() const { return m_orientation; }
+  glm::vec2 getVelocity() const { return m_velocity; }
   float getMass() { return m_mass; }
   void setMass(float m) { m_mass = m; }
-  float getMoment() { return m_moment; }
-  float getAngularVelocity() { return m_angularVelocity; }
+  float getMoment() const { return m_moment; }
+  float getAngularVelocity() const { return m_angularVelocity; }
 
   void resolveCollision(
     Rigidbody* actor2, glm::vec2 contact, glm::vec2* collisionNormal = nullptr);
@@ -48,8 +50,8 @@ public:
   // };
 
 protected:
-  glm::vec2 m_position = glm::vec2(0, 0);
-  glm::vec2 m_velocity = glm::vec2(0, 0);
+  glm::vec2 m_position;
+  glm::vec2 m_velocity;
   float m_mass;
   float m_orientation;
   float m_angularVelocity = 0.0f;
