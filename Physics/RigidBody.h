@@ -58,6 +58,6 @@ protected:
   float m_linearDrag = 0.3f;
   float m_angularDrag = 0.3f;
 
-  const float MIN_LINEAR_THRESHOLD = 0.1f;
+  const float MIN_LINEAR_THRESHOLD = 0.01f;
   const float MIN_ANGULAR_THRESHOLD = 0.01f;
 };

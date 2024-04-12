@@ -28,7 +28,7 @@ bool PhysicsApp::startup() {
   // setupContinuousDemo(glm::vec2(-40, 0), 45, 40, 10);
   // projectilePhysicsNumerical();
   // ballsOnPlane();
-  // newtonsCradle();
+  //newtonsCradle();
   cubesOnPlane();
 
 
