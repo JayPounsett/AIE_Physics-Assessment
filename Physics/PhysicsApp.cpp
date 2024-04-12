@@ -158,7 +158,7 @@ void PhysicsApp::dropBalls() {
     0.8f,
     glm::vec4(1, 0, 0, 1));
   Sphere* ball2 = new Sphere(
-    glm::vec2(0, 30),
+    glm::vec2(-1, 30),
     glm::vec2(0),
     10.0f,
     4,

@@ -13,17 +13,11 @@ public:
     float elasticity,
     glm::vec4 colour)
     : Rigidbody(
-        BOX,
-        position,
-        velocity,
-        mass,
-        elasticity,
-        m_orientation,
-        m_moment) {
+        BOX, position, velocity, mass, elasticity, m_orientation, m_moment) {
     m_extents = extents;
     m_colour = colour;
-    m_moment = 1.0f / 12.0f * m_mass * m_extents.x * m_extents.y;
     m_orientation = setOrientation(angle);
+    m_moment = setMoment(mass, extents.x, extents.y);
   };
 
   ~Box();
@@ -50,12 +44,17 @@ public:
 
 protected:
   float setOrientation(float angle) {
-    return m_orientation = angle * glm::pi<float>() / 180;
+    return angle * glm::pi<float>() / 180;
+  }
+
+  float setMoment(float mass, float x, float y) {
+    return 1.0f / 12.0f * mass * (2 * x) * (2 * y);
   }
 
 protected:
   glm::vec2 m_extents; // the half-edge lengths
   glm::vec4 m_colour;
+
 
   // store the local x,y axes of the box based on its angle of rotation
   glm::vec2 m_localX{};
