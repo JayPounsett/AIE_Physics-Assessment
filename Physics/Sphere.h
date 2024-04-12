@@ -11,30 +11,23 @@ public:
     float radius,
     float elasticity,
     glm::vec4 colour)
-    : Rigidbody(SPHERE,
-                position,
-                velocity,
-                mass,
-                elasticity,
-                0.0f,
-                m_moment) {
+    : Rigidbody(
+        SPHERE, position, velocity, mass, elasticity, m_orientation = 0.0f, m_moment) {
     m_radius = radius;
     m_colour = colour;
-    m_moment = setMoment();
+    
+    m_moment = 0.5f * m_mass * radius * radius;
   };
 
   ~Sphere();
 
-  virtual void draw() override;
+  virtual void draw();
 
-  // Getters
-  float getRadius() const { return m_radius; }
-  glm::vec4 getColour() const { return m_colour; }
+  float getRadius() { return m_radius; }
+  glm::vec4 getColour() { return m_colour; }
+  glm::vec2 setVelocity(glm::vec2 velocity) { this->m_velocity = velocity; }
 
 protected:
-  float setMoment() {
-    return m_moment = 0.5f * getMass() * getRadius() * getRadius();
-  }
-  float m_radius = 0.0f;
-  glm::vec4 m_colour{0, 0, 0, 1};
+  float m_radius;
+  glm::vec4 m_colour;
 };

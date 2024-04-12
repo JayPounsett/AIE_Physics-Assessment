@@ -3,11 +3,12 @@
 
 #include <glm/vec2.hpp>
 
-// #include "Sphere.h"
+//#include "Sphere.h"
 
 class PhysicsObject;
 
-class PhysicsScene {
+class PhysicsScene
+{
 public:
   PhysicsScene();
   ~PhysicsScene();
@@ -17,13 +18,11 @@ public:
   void update(float dt);
   void draw();
 
-  // Getters
+  void setGravity(glm::vec2 gravity) { this->m_gravity = gravity; } 
   glm::vec2 getGravity() const { return m_gravity; }
-  float getTimeStep() const { return m_timeStep; }
 
-  // Setters
-  void setGravity(glm::vec2 gravity) { this->m_gravity = gravity; }
   void setTimeStep(const float timeStep) { m_timeStep = timeStep; }
+  float getTimeStep() const { return m_timeStep; }
 
   static bool plane2Plane(PhysicsObject*, PhysicsObject*);
   static bool plane2Sphere(PhysicsObject*, PhysicsObject*);

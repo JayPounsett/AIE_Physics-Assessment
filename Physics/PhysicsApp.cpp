@@ -29,10 +29,8 @@ bool PhysicsApp::startup() {
 
   // setupContinuousDemo(glm::vec2(-40, 0), 45, 40, 10);
   // projectilePhysicsNumerical();
-  // newtonsCradle();
-  
   dropBalls();
-  
+  // newtonsCradle();
   // dropCubes();
   // dropBallsAndCubes();
 
@@ -155,39 +153,29 @@ void PhysicsApp::dropBalls() {
   Sphere* ball1 = new Sphere(
     glm::vec2(0, 20),
     glm::vec2(0),
-    5.0f,
+    10.0f,
     4,
-    0.5f,
+    0.8f,
     glm::vec4(1, 0, 0, 1));
-
   Sphere* ball2 = new Sphere(
-    glm::vec2(-1, 30),
+    glm::vec2(0, 30),
     glm::vec2(0),
-    5.0f,
+    10.0f,
     4,
     0.5f,
-    glm::vec4(0, 0.5, 0, 1));
+    glm::vec4(0, 1, 0, 1));
 
   Sphere* ball3 = new Sphere(
-    glm::vec2(50, 20),
-    glm::vec2(0),
-    5.0f,
-    4,
-    0.5f,
-    glm::vec4(0, 0, 1, 1));
+    glm::vec2(50, 20), glm::vec2(0), 10.0f, 4, 0.8f, glm::vec4(1, 0, 0, 1));
   Sphere* ball4 = new Sphere(
-    glm::vec2(51, 30),
-    glm::vec2(0),
-    5.0f,
-    4,
-    0.5f,
-    glm::vec4(0.75, 0, 0.75, 1));
+    glm::vec2(51, 30), glm::vec2(0), 10.0f, 4, 0.5f, glm::vec4(0, 1, 0, 1));
 
   m_physicsScene->addActor(plane);
   m_physicsScene->addActor(ball1);
   m_physicsScene->addActor(ball2);
   m_physicsScene->addActor(ball3);
   m_physicsScene->addActor(ball4);
+
 }
 
 void PhysicsApp::dropCubes() {
@@ -196,10 +184,11 @@ void PhysicsApp::dropCubes() {
   Plane* plane = new Plane(glm::vec2(0, 1), -30, 0.6f);
 
   Box* box1 = new Box(
-    glm::vec2(-5, 10),
+    glm::vec2(-5, 5),
     glm::vec2(3),
     glm::vec2(0),
     1.0f,
+    30.0f,
     0.3f,
     glm::vec4(1, 1, 0, 1));
 
@@ -208,18 +197,13 @@ void PhysicsApp::dropCubes() {
     glm::vec2(3),
     glm::vec2(0),
     1.0f,
+    10.0f,
     0.3f,
     glm::vec4(1, 0, 1, 1));
-
-  box1->setOrientation(30);
-  box2->setOrientation(75);
 
   m_physicsScene->addActor(plane);
   m_physicsScene->addActor(box1);
   m_physicsScene->addActor(box2);
-
-
-
 }
 
 void PhysicsApp::dropBallsAndCubes() {
@@ -232,6 +216,7 @@ void PhysicsApp::dropBallsAndCubes() {
     glm::vec2(3),
     glm::vec2(0),
     1.0f,
+    30.0f,
     0.3f,
     glm::vec4(1, 1, 0, 1));
 

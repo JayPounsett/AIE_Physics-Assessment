@@ -9,29 +9,28 @@
 Rigidbody::~Rigidbody() {}
 
 void Rigidbody::fixedUpdate(glm::vec2 gravity, float timeStep) {
-  m_position += getVelocity() * timeStep;
-  applyForce(gravity * getMass() * timeStep, getPosition());
+  m_position += m_velocity * timeStep;
+  applyForce(gravity * m_mass * timeStep, m_position);
 
-  m_orientation += getAngularVelocity() * timeStep;
+  m_orientation += m_angularVelocity * timeStep;
 
-  m_velocity -= getVelocity() * m_linearDrag * timeStep;
-  m_angularVelocity -= getAngularVelocity() * m_angularDrag * timeStep;
+  m_velocity -= m_velocity * m_linearDrag * timeStep;
+  m_angularVelocity -= m_angularVelocity * m_angularDrag * timeStep;
 
-  if (length(getVelocity()) < MIN_LINEAR_THRESHOLD) {
+  if (length(m_velocity) < MIN_LINEAR_THRESHOLD) {
     m_velocity = glm::vec2(0, 0);
   }
 
-  if (abs(getAngularVelocity()) < MIN_ANGULAR_THRESHOLD) {
+  if (abs(m_angularVelocity) < MIN_ANGULAR_THRESHOLD) {
     m_angularVelocity = 0.0f;
   }
 }
 
-void Rigidbody::applyForce(glm::vec2 force, glm::vec2 pos) {
+void Rigidbody::applyForce(glm::vec2 force, glm::vec2 position) {
   // In the applyForce() function you will need to calculate acceleration and
   // add it to the m_velocity member variable.You should be able to write this
   // as one line of code.
 
-  // Check to make sure we don't divide by 0
   if (getMass() == 0) {
     m_velocity += force / 1.0f;
   } else {
@@ -39,7 +38,7 @@ void Rigidbody::applyForce(glm::vec2 force, glm::vec2 pos) {
   }
 
   m_angularVelocity +=
-    (force.y * pos.x - force.x * pos.y) / getMoment();
+    (force.y * position.x - force.x * position.y) / getMoment();
 }
 
 void Rigidbody::resolveCollision(
