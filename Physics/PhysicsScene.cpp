@@ -174,8 +174,13 @@ bool PhysicsScene::sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2) {
   Sphere* sphere2 = dynamic_cast<Sphere*>(obj2);
 
   if (sphere1 != nullptr && sphere2 != nullptr) {
+    // This will adjust sphere2's position very slightly up the Y axis if both
+    // sphere's inhabit exactly the same coordinates.
+    // 
+    // This is not perfect in the long run and should instead move around the
+    // outside of the sphere for where the position should be.
     if (sphere1->getPosition() - sphere2->getPosition() == glm::vec2(0)) {
-        sphere2->setPosition(sphere2->getPosition() + glm::vec2(0, 0.01f));
+      sphere2->setPosition(sphere2->getPosition() + glm::vec2(0, 0.1f));
     }
 
     float dist = glm::length(sphere1->getPosition() - sphere2->getPosition());
@@ -232,7 +237,7 @@ bool PhysicsScene::box2Sphere(PhysicsObject* obj1, PhysicsObject* obj2) {
     // Checking if box and sphere at in EXACTLY the same coordinate,
     // Amend sphere to be on top of box by adding extents.y to its position
     if (sphere->getPosition() - closestPointOnBoxWorld == glm::vec2(0)) {
-        sphere->setPosition(sphere->getPosition() + glm::vec2(0, extents.y));
+      sphere->setPosition(sphere->getPosition() + glm::vec2(0, extents.y));
     }
 
     glm::vec2 circleToBox = sphere->getPosition() - closestPointOnBoxWorld;
@@ -260,7 +265,8 @@ bool PhysicsScene::box2Box(PhysicsObject* obj1, PhysicsObject* obj2) {
     int numContacts = 0;
 
     if (boxPos == glm::vec2(0)) {
-        box2->setPosition(box2->getPosition() + glm::vec2(0, box1->getExtents().y));
+      box2->setPosition(
+        box2->getPosition() + glm::vec2(0, box1->getExtents().y));
     }
 
     box1->checkBoxCorners(*box2, contact, numContacts, pen, norm);

@@ -11,9 +11,10 @@ public:
     float mass,
     float angle,
     float elasticity,
-    glm::vec4 colour)
+    glm::vec4 colour,
+    bool isKinematic = false)
     : Rigidbody(
-        BOX, position, velocity, mass, elasticity, m_orientation, m_moment) {
+        BOX, position, velocity, mass, elasticity, m_orientation, m_moment, isKinematic) {
     m_extents = extents;
     m_colour = colour;
     m_orientation = setOrientation(angle);
@@ -43,9 +44,7 @@ public:
   float getWidth() { return 2.0f * m_extents.x; }
 
 protected:
-  float setOrientation(float angle) {
-    return angle * glm::pi<float>() / 180;
-  }
+  float setOrientation(float angle) { return angle * glm::pi<float>() / 180; }
 
   float setMoment(float mass, float x, float y) {
     return 1.0f / 12.0f * mass * (2 * x) * (2 * y);

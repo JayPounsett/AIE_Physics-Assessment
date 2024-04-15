@@ -13,7 +13,8 @@ public:
     float mass,
     float elasticity,
     float orientation,
-    float moment)
+    float moment,
+    bool isKinematic = false)
     : PhysicsObject(shapeID) {
     m_shapeID = shapeID;
     m_position = position;
@@ -30,27 +31,33 @@ public:
   void applyForce(glm::vec2 force, glm::vec2 position);
 
   void resolveCollision(
-    Rigidbody* actor2, glm::vec2 contact, glm::vec2* collisionNormal = nullptr, float pen = 0.0f);
+    Rigidbody* actor2,
+    glm::vec2 contact,
+    glm::vec2* collisionNormal = nullptr,
+    float pen = 0.0f);
 
-  // Getters 
+  // Setters
+  void setPosition(glm::vec2 newPosition) { m_position = newPosition; }
+  void setKinematic(bool state) { m_isKinematic = state; }
+
+  // Getters
+  bool isKinematic(bool state) const { return m_isKinematic; }
+
   float getKineticEnergy() {
     return 0.5f * m_mass * glm::dot(m_velocity, m_velocity);
   }
 
   float getMass() {
-    if (m_mass != 0)
-      return m_mass;
-    else
-      return 0.1f;
+    if (m_mass == 0) m_mass = 0.1f; // Make sure mass is never equal to zero
+
+    return m_isKinematic ? INT_MAX : m_mass;
   }
   float getAngularVelocity() const { return m_angularVelocity; }
-  float getMoment() const { return m_moment; }
+  float getMoment() const { return m_isKinematic ? INT_MAX : m_moment; }
   glm::vec2 getPosition() const { return m_position; }
   float getOrientation() const { return m_orientation; }
   glm::vec2 getVelocity() const { return m_velocity; }
-  
-  // Setters
-  void setPosition(glm::vec2 newPosition) { m_position = newPosition; }
+
 
 protected:
   glm::vec2 m_position{0, 0};
@@ -59,6 +66,8 @@ protected:
   float m_orientation = 0.0f;
   float m_angularVelocity = 0.0f;
   float m_moment = 0.0f;
+
+  bool m_isKinematic = false;
 
   float m_linearDrag = 0.3f;
   float m_angularDrag = 0.3f;

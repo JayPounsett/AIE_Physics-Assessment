@@ -200,22 +200,23 @@ void PhysicsApp::dropBallsAndCubes() {
     glm::vec4(1, 0, 1, 1));
 
   Sphere* ball1 = new Sphere(
-    glm::vec2(20, 5), glm::vec2(0), 5.0f, 4, 0.3f, glm::vec4(1, 0, 0, 1));
+    glm::vec2(21, 5), glm::vec2(0), 5.0f, 4, 0.3f, glm::vec4(1, 0, 0, 1));
 
   Sphere* ball2 = new Sphere(
     glm::vec2(20, 5), glm::vec2(0), 10.0f, 4, 0.3f, glm::vec4(1, 0, 0, 1));
 
     Box* box3 = new Box(
-    glm::vec2(2, 5),
+    glm::vec2(0, -30),
     glm::vec2(3),
     glm::vec2(0),
     100.0f,
     0.0f,
     0.3f,
-    glm::vec4(1, 1, 0, 1));
+    glm::vec4(1, 1, 0, 1),
+        true);
 
   Sphere* ball3 = new Sphere(
-    glm::vec2(0, 5), glm::vec2(0), 5.0f, 4, 0.3f, glm::vec4(1, 0, 0, 1));
+    glm::vec2(0, 0), glm::vec2(0), 5.0f, 4, 0.3f, glm::vec4(1, 0, 0, 1));
 
   m_physicsScene->addActor(plane);
   m_physicsScene->addActor(box1);

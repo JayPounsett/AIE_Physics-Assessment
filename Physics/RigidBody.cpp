@@ -9,6 +9,13 @@
 Rigidbody::~Rigidbody() {}
 
 void Rigidbody::fixedUpdate(glm::vec2 gravity, float timeStep) {
+  // If kinematic, it will not move and react to collisions
+  if (m_isKinematic) {
+    m_velocity = glm::vec2(0, 0);
+    m_angularVelocity = 0.0f;
+    return;
+  }
+
   m_position += m_velocity * timeStep;
   applyForce(gravity * m_mass * timeStep, glm::vec2(0));
 
