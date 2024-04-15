@@ -31,8 +31,8 @@ bool PhysicsApp::startup() {
   // projectilePhysicsNumerical();
   // dropBalls();
   // newtonsCradle();
-  dropCubes();
-  // dropBallsAndCubes();
+  // dropCubes();
+  dropBallsAndCubes();
 
   return true;
 }
@@ -90,33 +90,13 @@ void PhysicsApp::newtonsCradle() {
     0.8f,
     glm::vec4(1, 0, 0, 1)));
   m_physicsScene->addActor(new Sphere(
-    glm::vec2(-15, 20),
-    glm::vec2(0, 0),
-    1.0f,
-    5,
-    0.8f,
-    glm::vec4(1, 0, 0, 1)));
+    glm::vec2(-15, 20), glm::vec2(0, 0), 1.0f, 5, 0.8f, glm::vec4(1, 0, 0, 1)));
   m_physicsScene->addActor(new Sphere(
-    glm::vec2(-5, 20),
-    glm::vec2(0, 0),
-    1.0f,
-    5,
-    0.8f,
-    glm::vec4(1, 0, 0, 1)));
+    glm::vec2(-5, 20), glm::vec2(0, 0), 1.0f, 5, 0.8f, glm::vec4(1, 0, 0, 1)));
   m_physicsScene->addActor(new Sphere(
-    glm::vec2(5, 20),
-    glm::vec2(0, 0),
-    1.0f,
-    5,
-    0.8f,
-    glm::vec4(1, 0, 0, 1)));
+    glm::vec2(5, 20), glm::vec2(0, 0), 1.0f, 5, 0.8f, glm::vec4(1, 0, 0, 1)));
   m_physicsScene->addActor(new Sphere(
-    glm::vec2(15, 20),
-    glm::vec2(0, 0),
-    1.0f,
-    5,
-    0.8f,
-    glm::vec4(1, 0, 0, 1)));
+    glm::vec2(15, 20), glm::vec2(0, 0), 1.0f, 5, 0.8f, glm::vec4(1, 0, 0, 1)));
 }
 
 void PhysicsApp::projectilePhysicsNumerical() {
@@ -151,20 +131,10 @@ void PhysicsApp::dropBalls() {
   Plane* plane = new Plane(glm::vec2(0, 1), -30, 0.6f);
 
   Sphere* ball1 = new Sphere(
-    glm::vec2(-45, 20),
-    glm::vec2(0),
-    10.0f,
-    4,
-    0.8f,
-    glm::vec4(1, 0, 0, 1));
+    glm::vec2(-45, 20), glm::vec2(0), 10.0f, 4, 0.8f, glm::vec4(1, 0, 0, 1));
 
   Sphere* ball2 = new Sphere(
-    glm::vec2(-50, 30),
-    glm::vec2(0),
-    10.0f,
-    4,
-    0.5f,
-    glm::vec4(0, 1, 0, 1));
+    glm::vec2(-45, 20), glm::vec2(0), 8.0f, 4, 0.5f, glm::vec4(0, 1, 0, 1));
 
   Sphere* ball3 = new Sphere(
     glm::vec2(50, 20), glm::vec2(0), 10.0f, 4, 0.8f, glm::vec4(1, 0, 0, 1));
@@ -176,7 +146,6 @@ void PhysicsApp::dropBalls() {
   m_physicsScene->addActor(ball2);
   m_physicsScene->addActor(ball3);
   m_physicsScene->addActor(ball4);
-
 }
 
 void PhysicsApp::dropCubes() {
@@ -194,7 +163,7 @@ void PhysicsApp::dropCubes() {
     glm::vec4(1, 1, 0, 1));
 
   Box* box2 = new Box(
-    glm::vec2(5, 10),
+    glm::vec2(-5, 5),
     glm::vec2(3),
     glm::vec2(0),
     1.0f,
@@ -213,25 +182,48 @@ void PhysicsApp::dropBallsAndCubes() {
   Plane* plane = new Plane(glm::vec2(0, 1), -30, 0.6f);
 
   Box* box1 = new Box(
-    glm::vec2(0, 0),
+    glm::vec2(-20, 5),
     glm::vec2(3),
     glm::vec2(0),
-    1.0f,
-    30.0f,
+    10.0f,
+    0.0f,
     0.3f,
     glm::vec4(1, 1, 0, 1));
 
-  Sphere* ball1 = new Sphere(
-    glm::vec2(0, 10),
+  Box* box2 = new Box(
+    glm::vec2(-20, 5),
+    glm::vec2(3),
     glm::vec2(0),
-    10.0f,
-    4,
+    100.0f,
+    30.0f,
     0.3f,
-    glm::vec4(1, 0, 0, 1));
+    glm::vec4(1, 0, 1, 1));
+
+  Sphere* ball1 = new Sphere(
+    glm::vec2(20, 5), glm::vec2(0), 5.0f, 4, 0.3f, glm::vec4(1, 0, 0, 1));
+
+  Sphere* ball2 = new Sphere(
+    glm::vec2(20, 5), glm::vec2(0), 10.0f, 4, 0.3f, glm::vec4(1, 0, 0, 1));
+
+    Box* box3 = new Box(
+    glm::vec2(2, 5),
+    glm::vec2(3),
+    glm::vec2(0),
+    100.0f,
+    0.0f,
+    0.3f,
+    glm::vec4(1, 1, 0, 1));
+
+  Sphere* ball3 = new Sphere(
+    glm::vec2(0, 5), glm::vec2(0), 5.0f, 4, 0.3f, glm::vec4(1, 0, 0, 1));
 
   m_physicsScene->addActor(plane);
   m_physicsScene->addActor(box1);
+  m_physicsScene->addActor(box2);
+  m_physicsScene->addActor(box3);
   m_physicsScene->addActor(ball1);
+  m_physicsScene->addActor(ball2);
+  m_physicsScene->addActor(ball3);
 }
 
 void PhysicsApp::setupContinuousDemo(

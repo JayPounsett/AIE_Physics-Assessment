@@ -3,12 +3,10 @@
 
 #include <glm/vec2.hpp>
 
-//#include "Sphere.h"
-
+class Rigidbody;
 class PhysicsObject;
 
-class PhysicsScene
-{
+class PhysicsScene {
 public:
   PhysicsScene();
   ~PhysicsScene();
@@ -17,13 +15,18 @@ public:
   void removeActor(PhysicsObject* actor);
   void update(float dt);
   void draw();
+  static void ApplyContactForces(
+    Rigidbody* body1, Rigidbody* body2, glm::vec2 norm, float pen);
 
-  void setGravity(glm::vec2 gravity) { this->m_gravity = gravity; } 
+  // Getters
   glm::vec2 getGravity() const { return m_gravity; }
-
-  void setTimeStep(const float timeStep) { m_timeStep = timeStep; }
   float getTimeStep() const { return m_timeStep; }
 
+  // Setters
+  void setTimeStep(const float timeStep) { m_timeStep = timeStep; }
+  void setGravity(glm::vec2 gravity) { this->m_gravity = gravity; }
+
+  // Collision Checks
   static bool plane2Plane(PhysicsObject*, PhysicsObject*);
   static bool plane2Sphere(PhysicsObject*, PhysicsObject*);
   static bool plane2Box(PhysicsObject*, PhysicsObject*);

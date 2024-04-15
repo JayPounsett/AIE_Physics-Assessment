@@ -30,11 +30,10 @@ public:
   void applyForce(glm::vec2 force, glm::vec2 position);
 
   void resolveCollision(
-    Rigidbody* actor2, glm::vec2 contact, glm::vec2* collisionNormal = nullptr);
+    Rigidbody* actor2, glm::vec2 contact, glm::vec2* collisionNormal = nullptr, float pen = 0.0f);
 
-  float getAngularVelocity() const { return m_angularVelocity; }
-  
-float getKineticEnergy() {
+  // Getters 
+  float getKineticEnergy() {
     return 0.5f * m_mass * glm::dot(m_velocity, m_velocity);
   }
 
@@ -44,11 +43,14 @@ float getKineticEnergy() {
     else
       return 0.1f;
   }
-
+  float getAngularVelocity() const { return m_angularVelocity; }
   float getMoment() const { return m_moment; }
   glm::vec2 getPosition() const { return m_position; }
   float getOrientation() const { return m_orientation; }
   glm::vec2 getVelocity() const { return m_velocity; }
+  
+  // Setters
+  void setPosition(glm::vec2 newPosition) { m_position = newPosition; }
 
 protected:
   glm::vec2 m_position{0, 0};
