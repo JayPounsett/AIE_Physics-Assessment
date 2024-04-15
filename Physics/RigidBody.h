@@ -13,8 +13,7 @@ public:
     float mass,
     float elasticity,
     float orientation,
-    float moment,
-    bool isKinematic = false)
+    float moment)
     : PhysicsObject(shapeID) {
     m_shapeID = shapeID;
     m_position = position;
@@ -37,8 +36,10 @@ public:
     float pen = 0.0f);
 
   // Setters
-  void setPosition(glm::vec2 newPosition) { m_position = newPosition; }
   void setKinematic(bool state) { m_isKinematic = state; }
+  float setOrientation(float angle) { return m_orientation = angle * glm::pi<float>() / 180; }
+  void setPosition(glm::vec2 newPosition) { m_position = newPosition; }
+  
 
   // Getters
   bool isKinematic(bool state) const { return m_isKinematic; }

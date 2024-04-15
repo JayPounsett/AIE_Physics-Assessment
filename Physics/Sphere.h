@@ -10,8 +10,7 @@ public:
     float mass,
     float radius,
     float elasticity,
-    glm::vec4 colour,
-    bool isKinematic = false)
+    glm::vec4 colour)
     : Rigidbody(
         SPHERE,
         position,
@@ -19,8 +18,7 @@ public:
         mass,
         elasticity,
         m_orientation = 0.0f,
-        0.5f * mass * radius * radius,
-        isKinematic) {
+        0.5f * mass * radius * radius) {
     m_radius = radius;
     m_colour = colour;
   };

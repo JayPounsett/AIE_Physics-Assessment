@@ -17,13 +17,12 @@ public:
   virtual void draw();
 
   // Simulations
-  void setupContinuousDemo(
-    glm::vec2 startPosition, float inclination, float speed, float gravity);
   void projectilePhysicsNumerical();
   void dropBalls();
   void newtonsCradle();
   void dropCubes();
   void dropBallsAndCubes();
+  void kinematicTest();
   
 
 protected:

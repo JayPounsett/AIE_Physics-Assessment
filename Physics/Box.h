@@ -9,12 +9,25 @@ public:
     glm::vec2 extents,
     glm::vec2 velocity,
     float mass,
+    float elasticity,
+    glm::vec4 colour)
+    : Rigidbody(
+        BOX, position, velocity, mass, elasticity, 0.0f, m_moment) {
+    m_extents = extents;
+    m_colour = colour;
+    m_orientation = setOrientation(0.0f);
+    m_moment = setMoment(mass, extents.x, extents.y);
+  };
+  Box(
+    glm::vec2 position,
+    glm::vec2 extents,
+    glm::vec2 velocity,
+    float mass,
     float angle,
     float elasticity,
-    glm::vec4 colour,
-    bool isKinematic = false)
+    glm::vec4 colour)
     : Rigidbody(
-        BOX, position, velocity, mass, elasticity, m_orientation, m_moment, isKinematic) {
+        BOX, position, velocity, mass, elasticity, m_orientation, m_moment) {
     m_extents = extents;
     m_colour = colour;
     m_orientation = setOrientation(angle);
@@ -44,8 +57,6 @@ public:
   float getWidth() { return 2.0f * m_extents.x; }
 
 protected:
-  float setOrientation(float angle) { return angle * glm::pi<float>() / 180; }
-
   float setMoment(float mass, float x, float y) {
     return 1.0f / 12.0f * mass * (2 * x) * (2 * y);
   }

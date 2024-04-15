@@ -27,12 +27,12 @@ bool PhysicsApp::startup() {
   m_physicsScene = new PhysicsScene();
   m_physicsScene->setTimeStep(0.01f);
 
-  // setupContinuousDemo(glm::vec2(-40, 0), 45, 40, 10);
   // projectilePhysicsNumerical();
   // dropBalls();
   // newtonsCradle();
   // dropCubes();
-  dropBallsAndCubes();
+  // dropBallsAndCubes();
+  kinematicTest();
 
   return true;
 }
@@ -203,20 +203,18 @@ void PhysicsApp::dropBallsAndCubes() {
     glm::vec2(21, 5), glm::vec2(0), 5.0f, 4, 0.3f, glm::vec4(1, 0, 0, 1));
 
   Sphere* ball2 = new Sphere(
-    glm::vec2(20, 5), glm::vec2(0), 10.0f, 4, 0.3f, glm::vec4(1, 0, 0, 1));
+    glm::vec2(20, 5), glm::vec2(0), 10.0f, 4, 0.3f, glm::vec4(0, 1, 0, 1));
 
-    Box* box3 = new Box(
-    glm::vec2(0, -30),
+  Box* box3 = new Box(
+    glm::vec2(0, 20),
     glm::vec2(3),
     glm::vec2(0),
     100.0f,
-    0.0f,
     0.3f,
-    glm::vec4(1, 1, 0, 1),
-        true);
+    glm::vec4(0, 1, 1, 1));
 
   Sphere* ball3 = new Sphere(
-    glm::vec2(0, 0), glm::vec2(0), 5.0f, 4, 0.3f, glm::vec4(1, 0, 0, 1));
+    glm::vec2(0, 0), glm::vec2(0), 5.0f, 4, 0.3f, glm::vec4(0, 0, 1, 1));
 
   m_physicsScene->addActor(plane);
   m_physicsScene->addActor(box1);
@@ -227,31 +225,42 @@ void PhysicsApp::dropBallsAndCubes() {
   m_physicsScene->addActor(ball3);
 }
 
-void PhysicsApp::setupContinuousDemo(
-  glm::vec2 startPosition, float inclination, float speed, float gravity) {
-  float t = 0;
-  float tStep = 0.5f;
-  float radius = 1.0f;
-  int segments = 12;
-  glm::vec4 colourYellow{1, 1, 0, 1};
+void PhysicsApp::kinematicTest() {
+  m_physicsScene->setGravity(glm::vec2(0, -9.82f));
 
-  // Gravity needs to be negative to pull objects downwards
-  glm::vec2 acceleration = {0, -gravity};
+  Plane* plane = new Plane(glm::vec2(0, 1), -30, 0.6f);
 
-  // Calculate velocity (as given speed but not speed over time)
-  // cos and sin use radians and degrees
-  float velocityX = speed * glm::cos(glm::radians(inclination));
-  float velocityY = speed * glm::sin(glm::radians(inclination));
-  glm::vec2 velocity{velocityX, velocityY};
-  glm::vec2 changePosition;
+  Sphere* pinball = new Sphere(
+    glm::vec2(-10, 30),
+    glm::vec2(0),
+    100.0f,
+    4.0f,
+    0.8f,
+    glm::vec4(1, 0, 1, 1));
 
-  while (t <= 5) {
-    changePosition = {
-      startPosition.x + velocity.x * t,
-      startPosition.y + velocity.y * t + 0.5f * acceleration.y * t * t};
-    // draw projectile
-    aie::Gizmos::add2DCircle(
-      startPosition + changePosition, radius, segments, colourYellow);
-    t += tStep;
-  }
+  Box* bumper1 = new Box(
+    glm::vec2(-10, 10),
+    glm::vec2(10, 2),
+    glm::vec2(0),
+    1.0f,
+    -25.0f,
+    1.0f,
+    glm::vec4(1, 1, 0, 1));
+
+  Box* bumper2 = new Box(
+    glm::vec2(15, -20),
+    glm::vec2(10, 2),
+    glm::vec2(0),
+    1.0f,
+    25.0f,
+    1.0f,
+    glm::vec4(1, 1, 0, 1));
+
+  bumper1->setKinematic(true);
+  bumper2->setKinematic(true);
+
+  m_physicsScene->addActor(plane);
+  m_physicsScene->addActor(pinball);
+  m_physicsScene->addActor(bumper1);
+  m_physicsScene->addActor(bumper2);
 }
