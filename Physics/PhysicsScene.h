@@ -15,6 +15,7 @@ public:
   void removeActor(PhysicsObject* actor);
   void update(float dt);
   void draw();
+  void checkForCollision();
   static void ApplyContactForces(
     Rigidbody* body1, Rigidbody* body2, glm::vec2 norm, float pen);
 

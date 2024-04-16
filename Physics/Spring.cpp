@@ -1,5 +1,7 @@
 #include "Spring.h"
 
+Spring::~Spring() {}
+
 void Spring::fixedUpdate(glm::vec2 gravity, float timeStep)
 {
     // get the world coords of the ends of the springs

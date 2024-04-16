@@ -49,33 +49,42 @@ void PhysicsScene::update(float dt) {
 
     accumulatedTime -= m_timeStep;
 
-    // check for collisions (ideally you'd want to have some sort of
-    // scene management in place
-    int actorCount = m_actors.size();
-
-    // Need to check for collisions against all objects except this one
-    for (int outer = 0; outer < actorCount - 1; outer++) {
-      for (int inner = outer + 1; inner < actorCount; inner++) {
-        PhysicsObject* object1 = m_actors[outer];
-        PhysicsObject* object2 = m_actors[inner];
-        int shapeId1 = object1->getShapeID();
-        int shapeId2 = object2->getShapeID();
-
-        // using function pointers
-        int functionIdx = (shapeId1 * SHAPE_COUNT) + shapeId2;
-        fn collisionFunctionPtr = collisionFunctionArray[functionIdx];
-        if (collisionFunctionPtr != nullptr) {
-          // did a collision occur?
-          collisionFunctionPtr(object1, object2);
-        }
-      }
-    }
+    checkForCollision();
   }
 }
 
 void PhysicsScene::draw() {
   for (auto pActor : m_actors) {
     pActor->draw();
+  }
+}
+
+void PhysicsScene::checkForCollision() {// check for collisions (ideally you'd want to have some sort of
+    // scene management in place
+  int actorCount = m_actors.size();
+
+  // Need to check for collisions against all objects except this one
+  for (int outer = 0; outer < actorCount - 1; outer++)
+  {
+    for (int inner = outer + 1; inner < actorCount; inner++)
+    {
+      PhysicsObject* object1 = m_actors[outer];
+      PhysicsObject* object2 = m_actors[inner];
+      int shapeId1 = object1->getShapeID();
+      int shapeId2 = object2->getShapeID();
+
+      // this check will ensure we don't include any joints in the collision checks
+      if (shapeId1 < 0 || shapeId2 < 0) continue;
+
+      // using function pointers
+      int functionIdx = (shapeId1 * SHAPE_COUNT) + shapeId2;
+      fn collisionFunctionPtr = collisionFunctionArray[functionIdx];
+      if (collisionFunctionPtr != nullptr)
+      {
+        // did a collision occur?
+        collisionFunctionPtr(object1, object2);
+      }
+    }
   }
 }
 

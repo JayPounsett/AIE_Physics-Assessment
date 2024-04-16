@@ -5,7 +5,13 @@
 class Spring : public PhysicsObject
 {
 public:
-  Spring();
+  Spring(
+    Rigidbody* body1,
+    Rigidbody* body2,
+    float springCoefficient,
+    float damping,
+    float restLength, glm::vec2 contact1 = glm::vec2(0, 0), glm::vec2 contact2 = glm::vec2(0, 0));
+
   ~Spring();
 
   void fixedUpdate(glm::vec2 gravity, float timeStep);
