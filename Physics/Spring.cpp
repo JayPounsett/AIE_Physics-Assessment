@@ -1,4 +1,5 @@
 #include "Spring.h"
+#include <Gizmos.h>
 
 Spring::~Spring() {}
 
@@ -20,6 +21,11 @@ void Spring::fixedUpdate(glm::vec2 gravity, float timeStep)
 
   m_body1->applyForce(-force * timeStep, p1 - m_body1->getPosition());
   m_body2->applyForce(force * timeStep, p2 - m_body2->getPosition());
+}
+
+void Spring::draw()
+{
+    aie::Gizmos::add2DLine(m_contact1, m_contact2, glm::vec4(1, 1, 1, 1));
 }
 
 glm::vec2 Spring::getContact1()

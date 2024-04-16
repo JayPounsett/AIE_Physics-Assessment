@@ -15,6 +15,7 @@ public:
   ~Spring();
 
   void fixedUpdate(glm::vec2 gravity, float timeStep);
+  virtual void draw() override;
   glm::vec2 getContact1();
   glm::vec2 getContact2();
 
