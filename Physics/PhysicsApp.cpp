@@ -9,6 +9,7 @@
 #include "Gizmos.h"
 #include "Input.h"
 #include "Plane.h"
+#include "Softbody.h"
 #include "Sphere.h"
 #include "Spring.h"
 #include "Texture.h"
@@ -17,7 +18,8 @@ PhysicsApp::PhysicsApp() {}
 
 PhysicsApp::~PhysicsApp() {}
 
-bool PhysicsApp::startup() {
+bool PhysicsApp::startup()
+{
   // increase the 2D line count to maximize the number of objects we can draw
   aie::Gizmos::create(255U, 255U, 65535U, 65535U);
 
@@ -34,17 +36,20 @@ bool PhysicsApp::startup() {
   // dropCubes();
   // dropBallsAndCubes();
   // kinematicTest();
-  ropeTest(10);
-
+  // ropeTest(10);
+  // softBodyTest();
+    
   return true;
 }
 
-void PhysicsApp::shutdown() {
+void PhysicsApp::shutdown()
+{
   delete m_font;
   delete m_2dRenderer;
 }
 
-void PhysicsApp::update(float deltaTime) {
+void PhysicsApp::update(float deltaTime)
+{
   // input example
   aie::Input* input = aie::Input::getInstance();
 
@@ -57,7 +62,8 @@ void PhysicsApp::update(float deltaTime) {
   if (input->isKeyDown(aie::INPUT_KEY_ESCAPE)) quit();
 }
 
-void PhysicsApp::draw() {
+void PhysicsApp::draw()
+{
   // wipe the screen to the background m_colour
   clearScreen();
 
@@ -77,7 +83,8 @@ void PhysicsApp::draw() {
 }
 
 // Simulations
-void PhysicsApp::newtonsCradle() {
+void PhysicsApp::newtonsCradle()
+{
   m_physicsScene->setGravity(glm::vec2(0));
 
   m_physicsScene->addActor(new Plane(glm::vec2(1, 0), -50, 0.6f));
@@ -101,7 +108,8 @@ void PhysicsApp::newtonsCradle() {
     glm::vec2(15, 20), glm::vec2(0, 0), 1.0f, 5, 0.8f, glm::vec4(1, 0, 0, 1)));
 }
 
-void PhysicsApp::projectilePhysicsNumerical() {
+void PhysicsApp::projectilePhysicsNumerical()
+{
   m_physicsScene = new PhysicsScene();
   m_physicsScene->setGravity(glm::vec2(0, -10));
 
@@ -127,7 +135,8 @@ void PhysicsApp::projectilePhysicsNumerical() {
     new Sphere(startPosition, velocity, mass, radius, 0.8f, colourRed));
 }
 
-void PhysicsApp::dropBalls() {
+void PhysicsApp::dropBalls()
+{
   m_physicsScene->setGravity(glm::vec2(0, -9.82f));
 
   Plane* plane = new Plane(glm::vec2(0, 1), -30, 0.6f);
@@ -150,7 +159,8 @@ void PhysicsApp::dropBalls() {
   m_physicsScene->addActor(ball4);
 }
 
-void PhysicsApp::dropCubes() {
+void PhysicsApp::dropCubes()
+{
   m_physicsScene->setGravity(glm::vec2(0, -9.82f));
 
   Plane* plane = new Plane(glm::vec2(0, 1), -30, 0.6f);
@@ -178,7 +188,8 @@ void PhysicsApp::dropCubes() {
   m_physicsScene->addActor(box2);
 }
 
-void PhysicsApp::dropBallsAndCubes() {
+void PhysicsApp::dropBallsAndCubes()
+{
   m_physicsScene->setGravity(glm::vec2(0, -9.82f));
 
   Plane* plane = new Plane(glm::vec2(0, 1), -30, 0.6f);
@@ -227,7 +238,8 @@ void PhysicsApp::dropBallsAndCubes() {
   m_physicsScene->addActor(ball3);
 }
 
-void PhysicsApp::kinematicTest() {
+void PhysicsApp::kinematicTest()
+{
   m_physicsScene->setGravity(glm::vec2(0, -9.82f));
 
   Plane* plane = new Plane(glm::vec2(0, 1), -30, 0.6f);
@@ -267,11 +279,13 @@ void PhysicsApp::kinematicTest() {
   m_physicsScene->addActor(bumper2);
 }
 
-void PhysicsApp::ropeTest(int num) {
+void PhysicsApp::ropeTest(int num)
+{
   m_physicsScene->setGravity(glm::vec2(0, -9.82f));
 
   Sphere* prev = nullptr;
-  for (int i = 0; i < num; i++) {
+  for (int i = 0; i < num; i++)
+  {
     // spawn a sphere to the right and below the previous one, so that the whole
     // rope acts under gravity and swings
     Sphere* sphere = new Sphere(
@@ -282,13 +296,15 @@ void PhysicsApp::ropeTest(int num) {
       1.0f,
       glm::vec4(0, 1, 0, 1));
 
-    if (i == 0) {
+    if (i == 0)
+    {
       sphere->setKinematic(true);
     }
     m_physicsScene->addActor(sphere);
 
-    if (prev) {
-      m_physicsScene->addActor(new Spring(sphere, prev, 500, 10, 7));
+    if (prev)
+    {
+      m_physicsScene->addActor(new Spring(sphere, prev, 500, 10));
     }
     prev = sphere;
   }
@@ -305,4 +321,48 @@ void PhysicsApp::ropeTest(int num) {
 
   box->setKinematic(true);
   m_physicsScene->addActor(box);
+}
+
+void PhysicsApp::softBodyTest()
+{
+  m_physicsScene->setGravity(glm::vec2(0, -9.82f));
+  Plane* plane = new Plane(glm::vec2(0, 1), -30, 0.6f);
+  m_physicsScene->addActor(plane);
+
+  std::vector<std::string> sb;
+  sb.push_back("000000......000.........000...");
+  sb.push_back("000000......000.........000...");
+  sb.push_back("00.......000000000...000000000");
+  sb.push_back("00.......000000000...000000000");
+  sb.push_back("000000......000.........000...");
+  sb.push_back("000000......000.........000...");
+  Softbody::Build(
+    m_physicsScene, glm::vec2(-75, 0), 5.0f, 50.0f, 50.0f, sb);
+}
+
+void PhysicsApp::playingPool() {
+// TODO: 
+// Create 4 planes as the sides of the pool table.
+// 6 'pockets' that will delete the ball if it hits them and add +1 to score.
+// Create balls in correct position plus a white ball.
+// Create a long and thin box as the pool cue.
+// 
+// Player Input for the stick:
+//   - Using arrow keys, moves end of stick up or down but keeps tip of stick pointing at the white ball.
+//   - Holding space bar pulls the stick away from the white ball. After space bar is released, pool cue moves towards the white ball and impacts.
+}
+
+void PhysicsApp::playingPinball()
+{
+  // TODO:
+  // Create 4 planes as the sides of the pinball table.
+  // 1 'hole' beneath flippers that will delete the ball if it hits them and remove a ball from the table.
+  // Create two or more other holes in the play area that you want to avoid or removes the ball from the table.
+  // Create two flippers that are kinetic/static until a key is pressed (isKinetic = false), applying a force to act like a flipper
+  // Create kinetic/static objects in the play area for the ball to collide with. Make their elasticity higher than 1.
+  // Increase score when hit objects in the play area.
+  // 
+  // Player Input
+  //   - Left/Right arrows for flippers
+  //   - Space bar to launch ball
 }

@@ -72,8 +72,8 @@ protected:
   float m_angularVelocity = 0.0f;
   float m_moment = 0.0f;
 
-  glm::vec2 m_localX;
-  glm::vec2 m_localY;
+  glm::vec2 m_localX{0, 0};
+  glm::vec2 m_localY{0, 0};
 
   bool m_isKinematic = false;
 

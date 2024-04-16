@@ -178,6 +178,7 @@
     <ClCompile Include="PhysicsScene.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="RigidBody.cpp" />
+    <ClCompile Include="Softbody.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Spring.cpp" />
   </ItemGroup>
@@ -188,6 +189,7 @@
     <ClInclude Include="PhysicsScene.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="RigidBody.h" />
+    <ClInclude Include="Softbody.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Spring.h" />
   </ItemGroup>

@@ -24,6 +24,9 @@ public:
   void dropBallsAndCubes();
   void kinematicTest();
   void ropeTest(int num);
+  void softBodyTest();
+  void playingPool();
+  void playingPinball();
   
 
 protected:
