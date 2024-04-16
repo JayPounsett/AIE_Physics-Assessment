@@ -29,6 +29,8 @@ public:
   void fixedUpdate(glm::vec2 gravity, float timeStep);
   void applyForce(glm::vec2 force, glm::vec2 position);
 
+  glm::vec2 toWorld(glm::vec2 position) { return position + m_localX * position.x + m_localY * position.y; }
+
   void resolveCollision(
     Rigidbody* actor2,
     glm::vec2 contact,
@@ -54,6 +56,8 @@ public:
     return m_isKinematic ? INT_MAX : m_mass;
   }
   float getAngularVelocity() const { return m_angularVelocity; }
+  glm::vec2 getLocalX() const { return m_localX; }
+  glm::vec2 getLocalY() const { return m_localY; }
   float getMoment() const { return m_isKinematic ? INT_MAX : m_moment; }
   glm::vec2 getPosition() const { return m_position; }
   float getOrientation() const { return m_orientation; }
@@ -62,11 +66,14 @@ public:
 
 protected:
   glm::vec2 m_position{0, 0};
-  glm::vec2 m_velocity{0, 0};
+  glm::vec2 m_velocity{0, 0}; 
   float m_mass = 0.1f;
   float m_orientation = 0.0f;
   float m_angularVelocity = 0.0f;
   float m_moment = 0.0f;
+
+  glm::vec2 m_localX;
+  glm::vec2 m_localY;
 
   bool m_isKinematic = false;
 

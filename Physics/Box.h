@@ -36,7 +36,7 @@ public:
 
   ~Box();
 
-  void fixedUpdate(glm::vec2 gravity, float timeStep);
+  //void fixedUpdate(glm::vec2 gravity, float timeStep);
   bool checkBoxCorners(
     const Box& box,
     glm::vec2& contact,
@@ -47,8 +47,6 @@ public:
 
   glm::vec4 getColour() const { return m_colour; }
   glm::vec2 getExtents() const { return m_extents; }
-  glm::vec2 getLocalX() const { return m_localX; }
-  glm::vec2 getLocalY() const { return m_localY; }
   glm::vec2 getPosition() const { return m_position; }
 
   float getMoment() { return m_moment; }
@@ -64,9 +62,4 @@ protected:
 protected:
   glm::vec2 m_extents; // the half-edge lengths
   glm::vec4 m_colour;
-
-
-  // store the local x,y axes of the box based on its angle of rotation
-  glm::vec2 m_localX{};
-  glm::vec2 m_localY{};
 };

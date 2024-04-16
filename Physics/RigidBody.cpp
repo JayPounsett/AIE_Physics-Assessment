@@ -8,9 +8,16 @@
 
 Rigidbody::~Rigidbody() {}
 
-void Rigidbody::fixedUpdate(glm::vec2 gravity, float timeStep) {
+void Rigidbody::fixedUpdate(glm::vec2 gravity, float timeStep)
+{
+  float cs = cosf(m_orientation);
+  float sn = sinf(m_orientation);
+  m_localX = glm::normalize(glm::vec2(cs, sn));
+  m_localY = glm::normalize(glm::vec2(-sn, cs));
+
   // If kinematic, it will not move and react to collisions
-  if (m_isKinematic) {
+  if (m_isKinematic)
+  {
     m_velocity = glm::vec2(0, 0);
     m_angularVelocity = 0.0f;
     return;
@@ -24,23 +31,29 @@ void Rigidbody::fixedUpdate(glm::vec2 gravity, float timeStep) {
   m_velocity -= m_velocity * m_linearDrag * timeStep;
   m_angularVelocity -= m_angularVelocity * m_angularDrag * timeStep;
 
-  if (length(m_velocity) < MIN_LINEAR_THRESHOLD) {
+  if (length(m_velocity) < MIN_LINEAR_THRESHOLD)
+  {
     m_velocity = glm::vec2(0, 0);
   }
 
-  if (abs(m_angularVelocity) < MIN_ANGULAR_THRESHOLD) {
+  if (abs(m_angularVelocity) < MIN_ANGULAR_THRESHOLD)
+  {
     m_angularVelocity = 0.0f;
   }
 }
 
-void Rigidbody::applyForce(glm::vec2 force, glm::vec2 position) {
+void Rigidbody::applyForce(glm::vec2 force, glm::vec2 position)
+{
   // In the applyForce() function you will need to calculate acceleration and
   // add it to the m_velocity member variable.You should be able to write this
   // as one line of code.
 
-  if (getMass() == 0) {
+  if (getMass() == 0)
+  {
     m_velocity += force / 1.0f;
-  } else {
+  }
+  else
+  {
     m_velocity += force / getMass();
   }
 
@@ -49,7 +62,8 @@ void Rigidbody::applyForce(glm::vec2 force, glm::vec2 position) {
 }
 
 void Rigidbody::resolveCollision(
-  Rigidbody* actor2, glm::vec2 contact, glm::vec2* collisionNormal, float pen) {
+  Rigidbody* actor2, glm::vec2 contact, glm::vec2* collisionNormal, float pen)
+{
   glm::vec2 normal = glm::normalize(
     collisionNormal ? *collisionNormal : actor2->m_position - m_position);
 
