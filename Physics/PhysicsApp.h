@@ -23,6 +23,7 @@ public:
   void dropCubes();
   void dropBallsAndCubes();
   void kinematicTest();
+  void ropeTest(int num);
   
 
 protected:

@@ -59,28 +59,29 @@ void PhysicsScene::draw() {
   }
 }
 
-void PhysicsScene::checkForCollision() {// check for collisions (ideally you'd want to have some sort of
-    // scene management in place
+void PhysicsScene::checkForCollision() { // check for collisions (ideally you'd
+                                         // want to have some sort of
+  // scene management in place
   int actorCount = m_actors.size();
 
   // Need to check for collisions against all objects except this one
-  for (int outer = 0; outer < actorCount - 1; outer++)
-  {
-    for (int inner = outer + 1; inner < actorCount; inner++)
-    {
+  for (int outer = 0; outer < actorCount - 1; outer++) {
+    for (int inner = outer + 1; inner < actorCount; inner++) {
       PhysicsObject* object1 = m_actors[outer];
       PhysicsObject* object2 = m_actors[inner];
       int shapeId1 = object1->getShapeID();
       int shapeId2 = object2->getShapeID();
 
-      // this check will ensure we don't include any joints in the collision checks
-      if (shapeId1 < 0 || shapeId2 < 0) continue;
+      // this check will ensure we don't include any joints in the collision
+      // checks
+      if (shapeId1 < 0 || shapeId2 < 0) {
+        continue;
+      }
 
       // using function pointers
       int functionIdx = (shapeId1 * SHAPE_COUNT) + shapeId2;
       fn collisionFunctionPtr = collisionFunctionArray[functionIdx];
-      if (collisionFunctionPtr != nullptr)
-      {
+      if (collisionFunctionPtr != nullptr) {
         // did a collision occur?
         collisionFunctionPtr(object1, object2);
       }
@@ -185,7 +186,7 @@ bool PhysicsScene::sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2) {
   if (sphere1 != nullptr && sphere2 != nullptr) {
     // This will adjust sphere2's position very slightly up the Y axis if both
     // sphere's inhabit exactly the same coordinates.
-    // 
+    //
     // This is not perfect in the long run and should instead move around the
     // outside of the sphere for where the position should be.
     if (sphere1->getPosition() - sphere2->getPosition() == glm::vec2(0)) {

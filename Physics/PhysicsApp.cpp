@@ -10,6 +10,7 @@
 #include "Input.h"
 #include "Plane.h"
 #include "Sphere.h"
+#include "Spring.h"
 #include "Texture.h"
 
 PhysicsApp::PhysicsApp() {}
@@ -32,7 +33,8 @@ bool PhysicsApp::startup() {
   // newtonsCradle();
   // dropCubes();
   // dropBallsAndCubes();
-  kinematicTest();
+  // kinematicTest();
+  ropeTest(10);
 
   return true;
 }
@@ -263,4 +265,44 @@ void PhysicsApp::kinematicTest() {
   m_physicsScene->addActor(pinball);
   m_physicsScene->addActor(bumper1);
   m_physicsScene->addActor(bumper2);
+}
+
+void PhysicsApp::ropeTest(int num) {
+  m_physicsScene->setGravity(glm::vec2(0, -9.82f));
+
+  Sphere* prev = nullptr;
+  for (int i = 0; i < num; i++) {
+    // spawn a sphere to the right and below the previous one, so that the whole
+    // rope acts under gravity and swings
+    Sphere* sphere = new Sphere(
+      glm::vec2(i * 3, 30 - i * 5),
+      glm::vec2(0),
+      10.0f,
+      2,
+      1.0f,
+      glm::vec4(0, 1, 0, 1));
+
+    if (i == 0) {
+      sphere->setKinematic(true);
+    }
+    m_physicsScene->addActor(sphere);
+
+    if (prev) {
+      m_physicsScene->addActor(new Spring(sphere, prev, 500, 10, 7));
+    }
+    prev = sphere;
+  }
+
+  // add a kinematic box at an angle for the rope to drape over
+  Box* box = new Box(
+    glm::vec2(0, -20),
+    glm::vec2(8, 2),
+    glm::vec2(0),
+    20.0f,
+    17.0f,
+    1.0f,
+    glm::vec4(0, 0, 1, 1));
+
+  box->setKinematic(true);
+  m_physicsScene->addActor(box);
 }

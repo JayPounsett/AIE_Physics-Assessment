@@ -14,10 +14,7 @@ const int SHAPE_COUNT = 3;
 class PhysicsObject
 {
 protected:
-  PhysicsObject(ShapeType a_shapeID, float a_elasticity = 1.0f)
-    : m_shapeID(a_shapeID), m_elasticity(a_elasticity)
-  {
-  }
+  PhysicsObject(ShapeType a_shapeID) : m_shapeID(a_shapeID) {}
 
 public:
   virtual void fixedUpdate(glm::vec2 gravity, float timeStep) = 0;
@@ -28,5 +25,5 @@ public:
 
 protected:
   ShapeType m_shapeID;
-  float m_elasticity;
+  float m_elasticity = 1.0f;
 };

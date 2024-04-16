@@ -29,7 +29,7 @@ public:
   void fixedUpdate(glm::vec2 gravity, float timeStep);
   void applyForce(glm::vec2 force, glm::vec2 position);
 
-  glm::vec2 toWorld(glm::vec2 position) { return position + m_localX * position.x + m_localY * position.y; }
+  glm::vec2 toWorld(glm::vec2 contact) { return m_position + m_localX * contact.x + m_localY * contact.y; }
 
   void resolveCollision(
     Rigidbody* actor2,
