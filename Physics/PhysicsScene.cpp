@@ -59,9 +59,7 @@ void PhysicsScene::draw() {
   }
 }
 
-void PhysicsScene::checkForCollision() { // check for collisions (ideally you'd
-                                         // want to have some sort of
-  // scene management in place
+void PhysicsScene::checkForCollision() { 
   int actorCount = m_actors.size();
 
   // Need to check for collisions against all objects except this one

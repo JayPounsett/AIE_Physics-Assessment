@@ -4,6 +4,10 @@
 #include "PhysicsScene.h"
 #include "Renderer2D.h"
 
+class Box;
+class Sphere;
+class Spring;
+
 class PhysicsApp : public aie::Application
 {
 public:
@@ -25,9 +29,6 @@ public:
   void kinematicTest();
   void ropeTest(int num);
   void softBodyTest();
-  void playingPool();
-  void playingPinball();
-  
 
 protected:
   aie::Renderer2D* m_2dRenderer;

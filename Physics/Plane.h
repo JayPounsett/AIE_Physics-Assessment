@@ -34,11 +34,13 @@ public:
   glm::vec2 getNormal() const { return m_normal; }
   float getDistance() const { return m_distanceToOrigin; }
 
+  void setColour(glm::vec4 colour) { m_colour = colour; }
+
   void resolveCollision(
     Rigidbody* actor2, glm::vec2 contact);
 
 protected:
-  glm::vec4 m_colour = glm::vec4(0, 0, 1, 1);
+  glm::vec4 m_colour = glm::vec4(0.25, 0.25, 0.25, 1);
   glm::vec2 m_normal = glm::vec2(0, 1);
   float m_distanceToOrigin = 0.0f;
 };

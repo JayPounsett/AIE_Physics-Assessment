@@ -25,7 +25,7 @@ void Spring::fixedUpdate(glm::vec2 gravity, float timeStep)
 
 void Spring::draw()
 {
-  aie::Gizmos::add2DLine(getContact1(), getContact2(), glm::vec4(1, 1, 1, 1));
+  aie::Gizmos::add2DLine(getContact1(), getContact2(), glm::vec4(0.25, 0.25, 0.25, 1));
 }
 
 glm::vec2 Spring::getContact1()

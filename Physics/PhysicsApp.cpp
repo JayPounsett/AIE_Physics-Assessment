@@ -13,6 +13,9 @@
 #include "Sphere.h"
 #include "Spring.h"
 #include "Texture.h"
+#include "PoolTableGame.h"
+
+aie::Input* input;
 
 PhysicsApp::PhysicsApp() {}
 
@@ -27,18 +30,18 @@ bool PhysicsApp::startup()
 
   m_font = new aie::Font("./font/consolas.ttf", 32);
 
+  input = aie::Input::getInstance();
+
   m_physicsScene = new PhysicsScene();
   m_physicsScene->setTimeStep(0.01f);
 
-  // projectilePhysicsNumerical();
-  // dropBalls();
-  // newtonsCradle();
-  // dropCubes();
+  // -= Simulations =-
   // dropBallsAndCubes();
   // kinematicTest();
   // ropeTest(10);
   // softBodyTest();
-    
+  // playingPool();
+
   return true;
 }
 
@@ -50,16 +53,20 @@ void PhysicsApp::shutdown()
 
 void PhysicsApp::update(float deltaTime)
 {
-  // input example
-  aie::Input* input = aie::Input::getInstance();
-
   aie::Gizmos::clear();
+
+  input = aie::Input::getInstance();
 
   m_physicsScene->update(deltaTime);
   m_physicsScene->draw();
 
   // exit the application
-  if (input->isKeyDown(aie::INPUT_KEY_ESCAPE)) quit();
+  if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
+  {
+    quit();
+  }
+
+  playerInput();
 }
 
 void PhysicsApp::draw()
@@ -336,33 +343,6 @@ void PhysicsApp::softBodyTest()
   sb.push_back("00.......000000000...000000000");
   sb.push_back("000000......000.........000...");
   sb.push_back("000000......000.........000...");
-  Softbody::Build(
-    m_physicsScene, glm::vec2(-75, 0), 5.0f, 50.0f, 50.0f, sb);
+  Softbody::Build(m_physicsScene, glm::vec2(-75, 0), 5.0f, 50.0f, 50.0f, sb);
 }
 
-void PhysicsApp::playingPool() {
-// TODO: 
-// Create 4 planes as the sides of the pool table.
-// 6 'pockets' that will delete the ball if it hits them and add +1 to score.
-// Create balls in correct position plus a white ball.
-// Create a long and thin box as the pool cue.
-// 
-// Player Input for the stick:
-//   - Using arrow keys, moves end of stick up or down but keeps tip of stick pointing at the white ball.
-//   - Holding space bar pulls the stick away from the white ball. After space bar is released, pool cue moves towards the white ball and impacts.
-}
-
-void PhysicsApp::playingPinball()
-{
-  // TODO:
-  // Create 4 planes as the sides of the pinball table.
-  // 1 'hole' beneath flippers that will delete the ball if it hits them and remove a ball from the table.
-  // Create two or more other holes in the play area that you want to avoid or removes the ball from the table.
-  // Create two flippers that are kinetic/static until a key is pressed (isKinetic = false), applying a force to act like a flipper
-  // Create kinetic/static objects in the play area for the ball to collide with. Make their elasticity higher than 1.
-  // Increase score when hit objects in the play area.
-  // 
-  // Player Input
-  //   - Left/Right arrows for flippers
-  //   - Space bar to launch ball
-}

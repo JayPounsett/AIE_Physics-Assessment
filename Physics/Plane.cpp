@@ -16,17 +16,17 @@ void Plane::draw() {
 
   glm::vec2 parallel(m_normal.y, -m_normal.x);
 
-  glm::vec4 colourFade = m_colour;
-  colourFade.a = 0;
+  //glm::vec4 colourFade = m_colour;
+  //colourFade.a = 0;
 
   glm::vec2 start = centerPoint + (parallel * lineSegmentLength);
   glm::vec2 end = centerPoint - (parallel * lineSegmentLength);
 
   // aie::Gizmos::add2DLine(start, end, colour);
   aie::Gizmos::add2DTri(start, end, start - m_normal * 10.f, m_colour, m_colour,
-                        colourFade);
+                        m_colour);
   aie::Gizmos::add2DTri(end, end - m_normal * 10.f, start - m_normal * 10.f,
-                        m_colour, colourFade, colourFade);
+                        m_colour, m_colour, m_colour);
 }
 
 void Plane::resetPosition(ShapeType PLANE) {

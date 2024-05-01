@@ -1,0 +1,10 @@
+C:\_GitHub\AIE\Physics Assessment\dependencies\imgui\imgui.cpp;C:\_GitHub\AIE\Physics Assessment\temp\Bootstrap\x64\Release\imgui.obj
+C:\_GitHub\AIE\Physics Assessment\dependencies\imgui\imgui_draw.cpp;C:\_GitHub\AIE\Physics Assessment\temp\Bootstrap\x64\Release\imgui_draw.obj
+C:\_GitHub\AIE\Physics Assessment\bootstrap\Application.cpp;C:\_GitHub\AIE\Physics Assessment\temp\Bootstrap\x64\Release\Application.obj
+C:\_GitHub\AIE\Physics Assessment\bootstrap\Font.cpp;C:\_GitHub\AIE\Physics Assessment\temp\Bootstrap\x64\Release\Font.obj
+C:\_GitHub\AIE\Physics Assessment\bootstrap\Gizmos.cpp;C:\_GitHub\AIE\Physics Assessment\temp\Bootstrap\x64\Release\Gizmos.obj
+C:\_GitHub\AIE\Physics Assessment\bootstrap\gl_core_4_4.c;C:\_GitHub\AIE\Physics Assessment\temp\Bootstrap\x64\Release\gl_core_4_4.obj
+C:\_GitHub\AIE\Physics Assessment\bootstrap\imgui_glfw3.cpp;C:\_GitHub\AIE\Physics Assessment\temp\Bootstrap\x64\Release\imgui_glfw3.obj
+C:\_GitHub\AIE\Physics Assessment\bootstrap\Input.cpp;C:\_GitHub\AIE\Physics Assessment\temp\Bootstrap\x64\Release\Input.obj
+C:\_GitHub\AIE\Physics Assessment\bootstrap\Renderer2D.cpp;C:\_GitHub\AIE\Physics Assessment\temp\Bootstrap\x64\Release\Renderer2D.obj
+C:\_GitHub\AIE\Physics Assessment\bootstrap\Texture.cpp;C:\_GitHub\AIE\Physics Assessment\temp\Bootstrap\x64\Release\Texture.obj
