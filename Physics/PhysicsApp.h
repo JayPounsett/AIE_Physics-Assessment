@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <string>
 
 #include "Application.h"
 #include "PhysicsScene.h"
@@ -33,7 +34,8 @@ public:
   void softBodyTest();
 
   // Pool Table Game
-  void playPoolTableGame();
+  void setupPoolTableGame();    // All functions to create table, place balls, etc
+  void playPoolTableGame();     // All functions needing to play within update()
 
 protected:
   aie::Renderer2D* m_2dRenderer;
@@ -57,11 +59,16 @@ protected:
   void setupCue();
   // Setting up the player inputs
   void playerInput();
+  void drawScoreBoard();
 
   // Pool Table Game Member Variables
 protected:
   // Global Variables
+  std::string m_scoreBoardScore;
+  int m_score = 0;
   const glm::vec2 m_zeroVelocity = glm::vec2(0, 0);
+
+  // Colours
   const glm::vec4 m_colourWhite = glm::vec4(1, 1, 1, 1);
   const glm::vec4 m_colourBlack = glm::vec4(0, 0, 0, 1); // Ball Pockets
   const glm::vec4 m_colourBrown =
@@ -75,11 +82,13 @@ protected:
 
   // Cuestick
   Box* m_cue;
-  glm::vec2 m_cueExtents = glm::vec2(5, 1);
+  float m_cueRotationAngle = 0.0f;
+  glm::vec2 m_cuePosition{}; // In Setup White Ball, this will be set to (whiteBallPosition + ballRadius + boxExtents.x, 0)
+  glm::vec2 m_cueOffTablePosition = glm::vec2(200,200);
+  glm::vec2 m_cueExtents = glm::vec2(30, 1);
   const float m_cueMass = 5.0f;
   const float m_cueAngle = 0.0f;
   const float m_cueElasticity = 0.1f;
-  const glm::vec2 m_cueStartPos = glm::vec2(60, 0);
   const float m_cueMaxVelocity = 10.0f;
   const float m_cueMaxDistance = 100.0f;
   float m_cueActualDistance = 0.0f;
@@ -98,12 +107,8 @@ protected:
   const glm::vec2 m_cyanBallStartPos = glm::vec2(-56, -0);
   const glm::vec2 m_magentaBallStartPos = glm::vec2(-56, -10);
 
-  // White ball
+  // Balls
   Sphere* m_whiteBall;
-  glm::vec2 m_whiteBallNewPos =
-    glm::vec2(50, 0); // Position when game starts or ball resets
-
-  // Coloured Balls
   Sphere* m_redBall;
   Sphere* m_greenBall;
   Sphere* m_blueBall;
@@ -111,7 +116,7 @@ protected:
   Sphere* m_cyanBall;
   Sphere* m_magentaBall;
 
-  // Pool Table Structure
+  // Pool Table Boundaries
   Plane* m_tableEdgeLeft;
   Plane* m_tableEdgeRight;
   Plane* m_tableEdgeTop;
