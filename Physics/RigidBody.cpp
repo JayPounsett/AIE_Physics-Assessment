@@ -48,6 +48,8 @@ void Rigidbody::applyForce(glm::vec2 force, glm::vec2 position)
   // add it to the m_velocity member variable.You should be able to write this
   // as one line of code.
 
+  if (m_isKinematic) return;
+
   if (getMass() == 0)
   {
     m_velocity += force / 1.0f;

@@ -1,5 +1,3 @@
-#include "PhysicsApp.h"
-
 #include <iostream>
 
 #include <glm/ext.hpp>
@@ -8,11 +6,13 @@
 #include "Font.h"
 #include "Gizmos.h"
 #include "Input.h"
+#include "PhysicsApp.h"
 #include "Plane.h"
 #include "Softbody.h"
 #include "Sphere.h"
 #include "Spring.h"
 #include "Texture.h"
+
 
 aie::Input* input;
 
@@ -39,7 +39,7 @@ bool PhysicsApp::startup()
   // kinematicTest();
   // ropeTest(10);
   // softBodyTest();
-  playingPool();
+  playPoolTableGame();
 
   return true;
 }
@@ -345,12 +345,8 @@ void PhysicsApp::softBodyTest()
   Softbody::Build(m_physicsScene, glm::vec2(-75, 0), 5.0f, 50.0f, 50.0f, sb);
 }
 
-void PhysicsApp::playingPool()
+void PhysicsApp::playPoolTableGame()
 {
-  // TODO: Hold LMB and drag for ball direction
-  
-  // Input: Press & hold space to set the force. Release to strike ball.
-
   aie::Application::setBackgroundColour(0.0f, 0.25f, 0.0f);
   m_physicsScene->setGravity(glm::vec2(0));
 
@@ -363,155 +359,182 @@ void PhysicsApp::playingPool()
 void PhysicsApp::createTable()
 {
   // Table Edges
-  Plane* tableEdgeLeft = new Plane(glm::vec2(1, 0), -95, 0.6f);
-  Plane* tableEdgeRight = new Plane(glm::vec2(-1, 0), -95, 0.6f);
-  Plane* tableEdgeTop = new Plane(glm::vec2(0, -1), -51, 0.6f);
-  Plane* tableEdgeBottom = new Plane(glm::vec2(0, 1), -51, 0.6f);
+  m_tableEdgeLeft = new Plane(glm::vec2(1, 0), -95, 0.4f);
+  m_tableEdgeRight = new Plane(glm::vec2(-1, 0), -95, 0.4f);
+  m_tableEdgeTop = new Plane(glm::vec2(0, -1), -51, 0.4f);
+  m_tableEdgeBottom = new Plane(glm::vec2(0, 1), -51, 0.4f);
 
-  // 6 Ball Pockets
-  Sphere* holeTopLeft = new Sphere(
-    glm::vec2(-95, 50),
-    glm::vec2(0),
-    5000.0f, // Tested with very high mass, still moves after hit enough times yet isKinematic = true
-    7.0f,
-    0.0f,
-    glm::vec4(0, 0, 0, 1));
-  holeTopLeft->setKinematic(true);
-
-  Sphere* holeTopMid = new Sphere(
-    glm::vec2(0, 50), glm::vec2(0), 5000.0f, 7.0f, 0.0f, glm::vec4(0, 0, 0, 1));
-  holeTopLeft->setKinematic(true);
-
-  Sphere* holeTopRight = new Sphere(
-    glm::vec2(95, 50),
-    glm::vec2(0),
-    5000.0f,
-    7.0f,
-    0.0f,
-    glm::vec4(0, 0, 0, 1));
-  holeTopLeft->setKinematic(true);
-
-  Sphere* holeBottomLeft = new Sphere(
-    glm::vec2(-95, -52),
-    glm::vec2(0),
-    5000.0f,
-    7.0f,
-    0.0f,
-    glm::vec4(0, 0, 0, 1));
-  holeTopLeft->setKinematic(true);
-
-  Sphere* holeBottomMid = new Sphere(
-    glm::vec2(0, -52),
-    glm::vec2(0),
-    5000.0f,
-    7.0f,
-    0.0f,
-    glm::vec4(0, 0, 0, 1));
-  holeTopLeft->setKinematic(true);
-
-  Sphere* holeBottomRight = new Sphere(
-    glm::vec2(95, -52), glm::vec2(0), 5000.0f, 7.0f, 0.0f, glm::vec4(0, 0, 0, 1));
-  holeTopLeft->setKinematic(true);
+  // Set 6 ball pockets to kinematic
+  m_pocketTopMid->setKinematic(true);
+  m_pocketTopRight->setKinematic(true);
+  m_pocketBottomLeft->setKinematic(true);
+  m_pocketBottomMid->setKinematic(true);
+  m_pocketBottomRight->setKinematic(true);
 
   // Add objects to scene
-  m_physicsScene->addActor(tableEdgeLeft);
-  m_physicsScene->addActor(tableEdgeRight);
-  m_physicsScene->addActor(tableEdgeTop);
-  m_physicsScene->addActor(tableEdgeBottom);
-
-  m_physicsScene->addActor(holeTopLeft);
-  m_physicsScene->addActor(holeTopMid);
-  m_physicsScene->addActor(holeTopRight);
-  m_physicsScene->addActor(holeBottomLeft);
-  m_physicsScene->addActor(holeBottomMid);
-  m_physicsScene->addActor(holeBottomRight);
-}
-
-void PhysicsApp::setupColouredBalls()
-{
-  Sphere* redBall = new Sphere(
-    glm::vec2(-40, 0), glm::vec2(0), 1.0f, 4.0f, 0.8f, glm::vec4(1, 0, 0, 1));
-
-  Sphere* greenBall = new Sphere(
-    glm::vec2(-48, 5), glm::vec2(0), 1.0f, 4.0f, 0.8f, glm::vec4(0, 1, 0, 1));
-
-  Sphere* blueBall = new Sphere(
-    glm::vec2(-48, -5), glm::vec2(0), 1.0f, 4.0f, 0.8f, glm::vec4(0, 0, 1, 1));
-
-  Sphere* yellowBall = new Sphere(
-    glm::vec2(-56, 10), glm::vec2(0), 1.0f, 4.0f, 0.8f, glm::vec4(1, 1, 0, 1));
-
-  Sphere* cyanBall = new Sphere(
-    glm::vec2(-56, 0), glm::vec2(0), 1.0f, 4.0f, 0.8f, glm::vec4(1, 0, 1, 1));
-
-  Sphere* magentaBall = new Sphere(
-    glm::vec2(-56, -10), glm::vec2(0), 1.0f, 4.0f, 0.8f, glm::vec4(0, 1, 1, 1));
-
-  // Add coloured balls to a vector
-  m_colouredBalls.push_back(redBall);
-  m_colouredBalls.push_back(greenBall);
-  m_colouredBalls.push_back(blueBall);
-  m_colouredBalls.push_back(yellowBall);
-  m_colouredBalls.push_back(cyanBall);
-  m_colouredBalls.push_back(magentaBall);
-
-  // Add objects to scene
-  m_physicsScene->addActor(redBall);
-  m_physicsScene->addActor(greenBall);
-  m_physicsScene->addActor(blueBall);
-  m_physicsScene->addActor(yellowBall);
-  m_physicsScene->addActor(cyanBall);
-  m_physicsScene->addActor(magentaBall);
+  m_physicsScene->addActor(m_tableEdgeLeft);
+  m_physicsScene->addActor(m_tableEdgeRight);
+  m_physicsScene->addActor(m_tableEdgeTop);
+  m_physicsScene->addActor(m_tableEdgeBottom);
+  m_physicsScene->addActor(m_pocketTopLeft);
+  m_physicsScene->addActor(m_pocketTopMid);
+  m_physicsScene->addActor(m_pocketTopRight);
+  m_physicsScene->addActor(m_pocketBottomLeft);
+  m_physicsScene->addActor(m_pocketBottomMid);
+  m_physicsScene->addActor(m_pocketBottomRight);
 }
 
 void PhysicsApp::setupWhiteBall()
 {
   m_whiteBall = new Sphere(
-    glm::vec2(50, 0), glm::vec2(0), 1.0f, 4.0f, 0.8f, glm::vec4(1, 1, 1, 1));
+    m_whiteBallStartPos,
+    m_zeroVelocity,
+    m_ballMass,
+    m_ballRadius,
+    m_ballElasticity,
+    m_colourWhite);
 
   m_whiteBall->setKinematic(true);
   m_physicsScene->addActor(m_whiteBall);
 }
 
+void PhysicsApp::setupColouredBalls()
+{
+  m_redBall = new Sphere(
+    m_redBallStartPos,
+    m_zeroVelocity,
+    m_ballMass,
+    m_ballRadius,
+    m_ballElasticity,
+    m_colourRed);
+
+  m_greenBall = new Sphere(
+    m_greenBallStartPos,
+    m_zeroVelocity,
+    m_ballMass,
+    m_ballRadius,
+    m_ballElasticity,
+    m_colourGreen);
+
+  m_blueBall = new Sphere(
+    m_blueBallStartPos,
+    m_zeroVelocity,
+    m_ballMass,
+    m_ballRadius,
+    m_ballElasticity,
+    m_colourBlue);
+
+  m_yellowBall = new Sphere(
+    m_yellowBallStartPos,
+    m_zeroVelocity,
+    m_ballMass,
+    m_ballRadius,
+    m_ballElasticity,
+    m_colourYellow);
+
+  m_cyanBall = new Sphere(
+    m_cyanBallStartPos,
+    m_zeroVelocity,
+    m_ballMass,
+    m_ballRadius,
+    m_ballElasticity,
+    m_colourCyan);
+
+  m_magentaBall = new Sphere(
+    m_magentaBallStartPos,
+    m_zeroVelocity,
+    m_ballMass,
+    m_ballRadius,
+    m_ballElasticity,
+    m_colourMagenta);
+
+  // Add objects to scene
+  m_physicsScene->addActor(m_redBall);
+  m_physicsScene->addActor(m_greenBall);
+  m_physicsScene->addActor(m_blueBall);
+  m_physicsScene->addActor(m_yellowBall);
+  m_physicsScene->addActor(m_cyanBall);
+  m_physicsScene->addActor(m_magentaBall);
+}
+
 void PhysicsApp::setupCue()
 {
+  // TODO Create cue stick at a distance from the white ball
+  // [X] Create m_variables for maxVelocity, maxDistance, actualDistance
+  // [ ] Create m_variable for location near white ball wherever it is on
+  // table
+  // [ ] Create m_variable for off-table spawn location after white
+  // ball is hit
+  // [X] Create/add cue stick to scene
+
   m_cue = new Box(
-    glm::vec2(60, 0),
-    glm::vec2(5, 1),
-    glm::vec2(0, 0),
-    5.0f,
-    0.0f,
-    0.1f,
-    glm::vec4(1, 1, 1, 1));
+    m_cueStartPos,
+    m_cueExtents,
+    m_zeroVelocity,
+    m_cueMass,
+    m_cueAngle,
+    m_cueElasticity,
+    m_colourBrown);
 
   m_cue->isKinematic(true);
-
-  m_cueSpring = new Spring(m_cue, m_whiteBall, 70, 7);
-
   m_physicsScene->addActor(m_cue);
-  m_physicsScene->addActor(m_cueSpring);
 }
 
 void PhysicsApp::playerInput()
-{
+{ // TODO Setup Player Input
+  // [ ] W: brings it back towards the ball (fine control)
+  // [ ] S: increases distance between cue and ball
+  // [ ] Spacebar: max velocity is stored(maxV), maxDist, actualDist
+  // [ ] Math: MaxV* actualDist / maxDist
+  // [ ] A/D rotate around ball
+
   // If spring is attached to cue and space is pressed
-  if (input->isKeyDown(aie::INPUT_KEY_SPACE))
-  {
-    m_isSpaceDown = true;
-    m_cue->applyForce(glm::vec2(10, 0), m_cue->getPosition());
-  }
+  // if (input->isKeyDown(aie::INPUT_KEY_SPACE))
+  //{
+  //  m_isSpaceDown = true;
+  //  m_cue->applyForce(glm::vec2(10, 0), m_cue->getPosition());
+  //}
 
-  if (m_isSpaceDown && input->isKeyUp(aie::INPUT_KEY_SPACE))
-  {
-    if (glm::distance(m_whiteBall->getPosition(), m_cue->getPosition()) <
-      11.0f)
-    {
-      m_whiteBall->setKinematic(false);
-      m_physicsScene->removeActor(m_cueSpring);
+  // if (m_isSpaceDown && input->isKeyUp(aie::INPUT_KEY_SPACE))
+  //{
+  //   if (glm::distance(m_whiteBall->getPosition(), m_cue->getPosition()) <
+  //     11.0f)
+  //   {
+  //     m_whiteBall->setKinematic(false);
+  //     m_physicsScene->removeActor(m_cueSpring);
 
-      //m_cue->setKinematic(true);
-      //m_physicsScene->removeActor(m_cue);
-      //setupCue();
-    }
-  }
+  //    //m_cue->setKinematic(true);
+  //    //m_physicsScene->removeActor(m_cue);
+  //    //setupCue();
+  //  }
+  //}
+
+  // TODO Notes from Open Room Discussion
+  /* W brings it back towards the ball (fine control)
+   * S increases distance between cue and ball
+   * Spacebar: max velocity stored (maxV), a maxDist, actualDist... MaxV *
+   * actualDist/maxDist
+
+   * A/D rotate around ball
+
+   * Cue has max velocity that can be reached
+
+   * Move cue off table until all balls velocity = ~0, move cue back to the
+   * white ball. Rotating around ball should be something like cos angle, sin
+   * angle (unit circle maths)
+
+   * If sink white ball, wait for ball velocity = 0, set it up at starting
+   * position with cue.
+
+   * Scoreboard, text object that iterates when ball sunk (or removes a point
+   * for white ball).
+
+   * When cue off table, disable input?
+
+   * Boolean to check if within window boundaries. Move to off screen?
+   * x maxBoundary 0 + 1/2 width
+   * x minBoundary 0 - 1/2 width
+   * y maxBoundary 0 + 1/2 height
+   * y minBoundary 0 - 1/2 height
+   */
 }
