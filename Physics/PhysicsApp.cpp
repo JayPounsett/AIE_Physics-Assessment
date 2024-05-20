@@ -21,6 +21,28 @@ PhysicsApp::PhysicsApp() {}
 
 PhysicsApp::~PhysicsApp() {}
 
+/* TODO Pool Table Game Notes from Open Room Discussion
+ * W brings it back towards the ball (fine control)
+ * S increases distance between cue and ball
+ * A/D rotate around ball
+ * Spacebar: max velocity stored (maxV), a maxDist, actualDist... (ie. MaxV *
+ actualDist/maxDist)
+
+ * Cue has max velocity that can be reached
+ * Move cue off table until all balls velocity = ~0, move cue back to the white
+ ball. Rotating around ball should be something like cos angle, sin angle (unit
+ circle maths)
+
+ * If sink white ball, wait for ball velocity = 0, set it up at starting
+ position with cue.
+
+ * Scoreboard, text object that iterates when ball sunk (or removes a point
+ for white ball).
+
+ * When cue off table, disable input? Bring it back on the table when all balls
+ are at 0 velocity.
+ */
+
 bool PhysicsApp::startup()
 {
   // increase the 2D line count to maximize the number of objects we can draw
@@ -60,7 +82,8 @@ void PhysicsApp::update(float deltaTime)
   m_physicsScene->update(deltaTime);
   m_physicsScene->draw();
 
-  playPoolTableGame();
+  playerInput(deltaTime);
+  updateScore();
 
   // exit the application
   if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
@@ -86,6 +109,7 @@ void PhysicsApp::draw()
   m_2dRenderer->drawText(m_font, "Press ESC to quit", 180, 5);
 
   drawScoreBoard();
+  drawCueAimLine();
 
   // done drawing sprites
   m_2dRenderer->end();
@@ -96,47 +120,20 @@ void PhysicsApp::setupPoolTableGame()
   aie::Application::setBackgroundColour(0.0f, 0.25f, 0.0f);
   m_physicsScene->setGravity(glm::vec2(0));
 
-  createTable();
-  setupColouredBalls();
-  setupWhiteBall();
-  setupCue();
-}
-
-void PhysicsApp::playPoolTableGame() { 
-    playerInput();
-    
-}
-
-void PhysicsApp::createTable()
-{
-  // Table Edges
+  // Setup Table Edges
   m_tableEdgeLeft = new Plane(glm::vec2(1, 0), -95, 0.4f);
   m_tableEdgeRight = new Plane(glm::vec2(-1, 0), -95, 0.4f);
   m_tableEdgeTop = new Plane(glm::vec2(0, -1), -51, 0.4f);
   m_tableEdgeBottom = new Plane(glm::vec2(0, 1), -51, 0.4f);
 
-  // Set 6 ball pockets to kinematic
+  // Setup Pockets as kinematic
   m_pocketTopMid->setKinematic(true);
   m_pocketTopRight->setKinematic(true);
   m_pocketBottomLeft->setKinematic(true);
   m_pocketBottomMid->setKinematic(true);
   m_pocketBottomRight->setKinematic(true);
 
-  // Add objects to scene
-  m_physicsScene->addActor(m_tableEdgeLeft);
-  m_physicsScene->addActor(m_tableEdgeRight);
-  m_physicsScene->addActor(m_tableEdgeTop);
-  m_physicsScene->addActor(m_tableEdgeBottom);
-  m_physicsScene->addActor(m_pocketTopLeft);
-  m_physicsScene->addActor(m_pocketTopMid);
-  m_physicsScene->addActor(m_pocketTopRight);
-  m_physicsScene->addActor(m_pocketBottomLeft);
-  m_physicsScene->addActor(m_pocketBottomMid);
-  m_physicsScene->addActor(m_pocketBottomRight);
-}
-
-void PhysicsApp::setupWhiteBall()
-{
+  // Setup White Ball
   m_whiteBall = new Sphere(
     m_whiteBallStartPos,
     m_zeroVelocity,
@@ -145,15 +142,21 @@ void PhysicsApp::setupWhiteBall()
     m_ballElasticity,
     m_colourWhite);
 
-  m_cuePosition =
-    m_whiteBallStartPos + glm::vec2(m_ballRadius + m_cueExtents.x, 0);
+  // Setup Cue Offset
+  m_cueOffset = glm::vec2(m_whiteBall->getRadius() + m_cueExtents.x, 0);
+  m_cuePosition = m_whiteBall->getPosition() + m_cueOffset;
 
-  m_whiteBall->setKinematic(true);
-  m_physicsScene->addActor(m_whiteBall);
-}
+  // Setup Cue
+  m_cue = new Box(
+    m_cuePosition,
+    m_cueExtents,
+    m_zeroVelocity,
+    m_cueMass,
+    m_cueAngle,
+    m_cueElasticity,
+    m_colourBrown);
 
-void PhysicsApp::setupColouredBalls()
-{
+  // Setup Coloured Balls
   m_redBall = new Sphere(
     m_redBallStartPos,
     m_zeroVelocity,
@@ -202,107 +205,139 @@ void PhysicsApp::setupColouredBalls()
     m_ballElasticity,
     m_colourMagenta);
 
+  // Add balls & pockets to their vectors for collision checks
+  // Add balls to balls vector
+  m_balls.push_back(m_whiteBall);
+  m_balls.push_back(m_redBall);
+  m_balls.push_back(m_greenBall);
+  m_balls.push_back(m_blueBall);
+  m_balls.push_back(m_yellowBall);
+  m_balls.push_back(m_cyanBall);
+  m_balls.push_back(m_magentaBall);
+  // Add pockets to the pockets vector
+  m_pockets.push_back(m_pocketTopLeft);
+  m_pockets.push_back(m_pocketTopMid);
+  m_pockets.push_back(m_pocketTopRight);
+  m_pockets.push_back(m_pocketBottomLeft);
+  m_pockets.push_back(m_pocketBottomMid);
+  m_pockets.push_back(m_pocketBottomRight);
+
+  // Cue
+  // m_cue->isKinematic(true);
+
+  // White Ball
+  // m_whiteBall->setKinematic(true);
+
   // Add objects to scene
+  // Table
+  m_physicsScene->addActor(m_tableEdgeLeft);
+  m_physicsScene->addActor(m_tableEdgeRight);
+  m_physicsScene->addActor(m_tableEdgeTop);
+  m_physicsScene->addActor(m_tableEdgeBottom);
+  // Pockets
+  m_physicsScene->addActor(m_pocketTopLeft);
+  m_physicsScene->addActor(m_pocketTopMid);
+  m_physicsScene->addActor(m_pocketTopRight);
+  m_physicsScene->addActor(m_pocketBottomLeft);
+  m_physicsScene->addActor(m_pocketBottomMid);
+  m_physicsScene->addActor(m_pocketBottomRight);
+  // Balls
+  m_physicsScene->addActor(m_whiteBall);
   m_physicsScene->addActor(m_redBall);
   m_physicsScene->addActor(m_greenBall);
   m_physicsScene->addActor(m_blueBall);
   m_physicsScene->addActor(m_yellowBall);
   m_physicsScene->addActor(m_cyanBall);
   m_physicsScene->addActor(m_magentaBall);
-}
-
-void PhysicsApp::setupCue()
-{
-  // TODO Create cue stick at a distance from the white ball
-  // [X] Create m_variables for maxVelocity, maxDistance, actualDistance
-  // [X] Create m_variable for location near white ball wherever it is on
-  // table
-  // [ ] Create m_variable for off-table spawn location after white
-  // ball is hit
-  // [X] Create/add cue stick to scene
-
-  m_cue = new Box(
-    m_cuePosition,
-    m_cueExtents,
-    m_zeroVelocity,
-    m_cueMass,
-    m_cueAngle,
-    m_cueElasticity,
-    m_colourBrown);
-
-  m_cue->isKinematic(true);
+  // Cue
   m_physicsScene->addActor(m_cue);
 }
 
-void PhysicsApp::playerInput()
+void PhysicsApp::playerInput(float deltaTime)
 { // TODO Setup Player Input
+  // Not currently functioning for W/S/A/D/Space
 
   if (input->isKeyDown(aie::INPUT_KEY_W))
   {
     // [ ] W: brings it back towards the ball (fine control)
+
+    // Check to see if distance between cue and white ball is close to zero
+    if (m_cueActualDistance <= 0.01f) m_cueActualDistance = 0.0f;
+
+    // Decrease distance between white ball and cue
+    m_cueActualDistance -= 1.0f * deltaTime;  // Should (float) actualDistance be a vector2 or a length of a vector?
   }
 
   if (input->isKeyDown(aie::INPUT_KEY_S))
   {
     // [ ] S: increases distance between cue and ball
+
+    // Check to see if max distance has been reached
+    if (m_cueActualDistance > m_cueMaxDistance) // Should (float) actualDistance be a vector2 or a length of a vector?
+      m_cueActualDistance = m_cueMaxDistance;
+
+    // Increase distance between white ball and cue
+    m_cueActualDistance += 1.0f * deltaTime;
   }
 
   if (input->isKeyDown(aie::INPUT_KEY_SPACE))
   {
     // [ ] Spacebar: max velocity is stored(maxV), maxDist, actualDist
     // [ ] Math: MaxV* actualDist / maxDist
+    
+    // Once space bar is pressed, send the cue towards the white ball with
+    // velocity
+    m_cuePosition = m_whiteBall->getPosition() + glm::vec2(1, 0);
+    glm::vec2 maxV =
+      m_cueMaxVelocity * m_cueActualDistance / m_cueMaxDistance;
+
+    if (maxV.length() > m_cueMaxVelocity.length()) maxV = m_cueMaxVelocity;
+
+    m_cue->setVelocity(maxV);
   }
 
   if (input->isKeyDown(aie::INPUT_KEY_A))
   {
     // [ ] A: rotate counter clockwise around ball
-    m_cueRotationAngle -= 0.1f;
   }
   if (input->isKeyDown(aie::INPUT_KEY_D))
   {
     // [ ] D: rotate clockwise around ball
-    m_cueRotationAngle += 0.1f;
+  }
+
+  // Debug scoreboard by pressing Q
+  if (input->isKeyDown(aie::INPUT_KEY_Q))
+  {
+    m_score += 1;
   }
 }
 
 void PhysicsApp::drawScoreBoard()
 {
-  // [ ] ScoreBoard: Text object that iterates when ball sunk
-  // [ ] ScoreBoard: Text object that iterates when white ball is hit}
-  
+  // [X] ScoreBoard: Text object that iterates when ball sunk
+
   m_scoreBoardScore = "Score: " + std::to_string(m_score);
 
-  m_2dRenderer->drawText(m_font, m_scoreBoardScore.c_str(), 875, 695);
+  m_2dRenderer->drawText(m_font, m_scoreBoardScore.c_str(), 875, 692);
 }
 
-// TODO Notes from Open Room Discussion
-/* W brings it back towards the ball (fine control)
- * S increases distance between cue and ball
- * Spacebar: max velocity stored (maxV), a maxDist, actualDist... MaxV *
- * actualDist/maxDist
+void PhysicsApp::drawCueAimLine()
+{
+  // [ ] Draw line between cue and ball
 
- * A/D rotate around ball
+  // This is called in draw() but nothing in update(), may be an issue
+  m_2dRenderer->drawLine(
+    m_cuePosition.x,
+    m_cuePosition.y,
+    m_cuePosition.x + m_cue->getVelocity().x, // also tried m_cueActualDistance
+    m_cuePosition.y + m_cue->getVelocity().y, // also tried m_cueActualDistance
+    1.0f);
+}
 
- * Cue has max velocity that can be reached
-
- * Move cue off table until all balls velocity = ~0, move cue back to the
- * white ball. Rotating around ball should be something like cos angle, sin
- * angle (unit circle maths)
-
- * If sink white ball, wait for ball velocity = 0, set it up at starting
- * position with cue.
-
- * Scoreboard, text object that iterates when ball sunk (or removes a point
- * for white ball).
-
- * When cue off table, disable input?
-
- * Boolean to check if within window boundaries. Move to off screen?
- * x maxBoundary 0 + 1/2 width
- * x minBoundary 0 - 1/2 width
- * y maxBoundary 0 + 1/2 height
- * y minBoundary 0 - 1/2 height
- */
+void PhysicsApp::updateScore()
+{
+  // [ ] Increase score when a coloured ball sinks or decreases when white sinks
+}
 
 // Simulations
 void PhysicsApp::newtonsCradle()

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <string>
+
+#include <glm/glm.hpp>
 
 #include "Application.h"
 #include "PhysicsScene.h"
@@ -34,8 +35,7 @@ public:
   void softBodyTest();
 
   // Pool Table Game
-  void setupPoolTableGame();    // All functions to create table, place balls, etc
-  void playPoolTableGame();     // All functions needing to play within update()
+  void setupPoolTableGame(); // All functions to create table, place balls, etc
 
 protected:
   aie::Renderer2D* m_2dRenderer;
@@ -49,17 +49,11 @@ protected:
 
   // Pool Table Game Functions
 protected:
-  // Create table edges & pockets, setting them to kinematic
-  void createTable();
-  // Creating coloured balls and setting into position
-  void setupColouredBalls();
-  // Setting up white ball, storing it's starting position
-  void setupWhiteBall();
-  // Setting up cue
-  void setupCue();
   // Setting up the player inputs
-  void playerInput();
+  void playerInput(float deltaTime);
   void drawScoreBoard();
+  void drawCueAimLine();
+  void updateScore();
 
   // Pool Table Game Member Variables
 protected:
@@ -82,17 +76,21 @@ protected:
 
   // Cuestick
   Box* m_cue;
-  float m_cueRotationAngle = 0.0f;
-  glm::vec2 m_cuePosition{}; // In Setup White Ball, this will be set to (whiteBallPosition + ballRadius + boxExtents.x, 0)
-  glm::vec2 m_cueOffTablePosition = glm::vec2(200,200);
-  glm::vec2 m_cueExtents = glm::vec2(30, 1);
+  glm::vec2 m_cuePosition{};
+  glm::vec2 m_cueOffset; // Offset of cue from white ball
+  glm::vec2 m_cueOffTablePosition = glm::vec2(
+    200, 200); // Location to put cue off the table when balls are in motion
+  
+  glm::vec2 m_cueExtents = glm::vec2(20, 1); // Size of cue stick
   const float m_cueMass = 5.0f;
   const float m_cueAngle = 0.0f;
   const float m_cueElasticity = 0.1f;
-  const float m_cueMaxVelocity = 10.0f;
   const float m_cueMaxDistance = 100.0f;
-  float m_cueActualDistance = 0.0f;
 
+  const glm::vec2 m_cueMaxVelocity = glm::vec2(10, 10);
+  float m_cueActualDistance = 0.0f;
+  float m_cueRotationAngle = 0.0f;
+  
   // Ball Variables
   const float m_ballMass = 1.0f;
   const float m_ballRadius = 4.0f;
@@ -108,6 +106,7 @@ protected:
   const glm::vec2 m_magentaBallStartPos = glm::vec2(-56, -10);
 
   // Balls
+  std::vector<Sphere*> m_balls;
   Sphere* m_whiteBall;
   Sphere* m_redBall;
   Sphere* m_greenBall;
@@ -123,6 +122,7 @@ protected:
   Plane* m_tableEdgeBottom;
 
   // Pocket Variables
+  std::vector<Sphere*> m_pockets;
   const glm::vec2 m_pocketTopLeftPosition = glm::vec2(-95, 52);
   const glm::vec2 m_pocketTopMidPosition = glm::vec2(0, 52);
   const glm::vec2 m_pocketTopRightPosition = glm::vec2(95, 52);

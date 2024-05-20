@@ -4,7 +4,8 @@
 
 #include "PhysicsObject.h"
 
-class Rigidbody : public PhysicsObject {
+class Rigidbody : public PhysicsObject
+{
 public:
   Rigidbody(
     ShapeType shapeID,
@@ -14,7 +15,8 @@ public:
     float elasticity,
     float orientation,
     float moment)
-    : PhysicsObject(shapeID) {
+    : PhysicsObject(shapeID)
+  {
     m_shapeID = shapeID;
     m_position = position;
     m_velocity = velocity;
@@ -29,7 +31,10 @@ public:
   void fixedUpdate(glm::vec2 gravity, float timeStep);
   void applyForce(glm::vec2 force, glm::vec2 position);
 
-  glm::vec2 toWorld(glm::vec2 contact) { return m_position + m_localX * contact.x + m_localY * contact.y; }
+  glm::vec2 toWorld(glm::vec2 contact)
+  {
+    return m_position + m_localX * contact.x + m_localY * contact.y;
+  }
 
   void resolveCollision(
     Rigidbody* actor2,
@@ -39,18 +44,23 @@ public:
 
   // Setters
   void setKinematic(bool state) { m_isKinematic = state; }
-  float setOrientation(float angle) { return m_orientation = angle * glm::pi<float>() / 180; }
+  float setOrientation(float angle)
+  {
+    return m_orientation = angle * glm::pi<float>() / 180;
+  }
   void setPosition(glm::vec2 newPosition) { m_position = newPosition; }
-  
+  void setVelocity(glm::vec2 newVelocity) { m_velocity = newVelocity; }
 
   // Getters
   bool isKinematic(bool state) const { return m_isKinematic; }
 
-  float getKineticEnergy() {
+  float getKineticEnergy()
+  {
     return 0.5f * m_mass * glm::dot(m_velocity, m_velocity);
   }
 
-  float getMass() {
+  float getMass()
+  {
     if (m_mass == 0) m_mass = 0.1f; // Make sure mass is never equal to zero
 
     return m_isKinematic ? INT_MAX : m_mass;
@@ -66,7 +76,7 @@ public:
 
 protected:
   glm::vec2 m_position{0, 0};
-  glm::vec2 m_velocity{0, 0}; 
+  glm::vec2 m_velocity{0, 0};
   float m_mass = 0.1f;
   float m_orientation = 0.0f;
   float m_angularVelocity = 0.0f;
