@@ -30,8 +30,24 @@ PhysicsApp::~PhysicsApp() {}
 
  * Cue has max velocity that can be reached
  * Move cue off table until all balls velocity = ~0, move cue back to the white
- ball. Rotating around ball should be something like cos angle, sin angle (unit
+ ball.
+ * Rotating around ball should be something like cos angle, sin angle (unit
  circle maths)
+
+ https://www.youtube.com/watch?v=7j5yW5QDC2U (Math of how to rotate a vector)
+ If theta is the angle, the position at the edge of the circle will be:
+    (X axis) a = (cos theta, sin theta)
+    (Y axis) b = (-sin theta, cos theta)
+    vPrime = (cueX * a) + (cueY * b) <-- This rotates the vector by the angle
+ theta
+
+    Using a 2x2 matrix:
+    vPrime =    [Cos theta, -Sin theta] * [cueX]
+                [Sin theta,  Cos theta]   [cueY]
+
+  - Need to rotate around a fixed point, which is the white ball position +
+ radius
+
 
  * If sink white ball, wait for ball velocity = 0, set it up at starting
  position with cue.
@@ -115,6 +131,7 @@ void PhysicsApp::draw()
   m_2dRenderer->end();
 }
 
+#pragma region Setup Pool Table
 void PhysicsApp::setupPoolTableGame()
 {
   aie::Application::setBackgroundColour(0.0f, 0.25f, 0.0f);
@@ -142,9 +159,16 @@ void PhysicsApp::setupPoolTableGame()
     m_ballElasticity,
     m_colourWhite);
 
-  // Setup Cue Offset
-  m_cueOffset = glm::vec2(m_whiteBall->getRadius() + m_cueExtents.x, 0);
-  m_cuePosition = m_whiteBall->getPosition() + m_cueOffset;
+  // Setup Cue Position with Offset
+  m_cuePosition = glm::vec2(
+    m_whiteBall->getPosition().x + m_cueExtents.x + m_ballRadius,
+    m_whiteBall->getPosition().y);
+  
+  
+
+  // Setup Cue Tip position for use with rotations as a box position is its
+  // center point
+  // getCueTipPosition();
 
   // Setup Cue
   m_cue = new Box(
@@ -252,66 +276,9 @@ void PhysicsApp::setupPoolTableGame()
   // Cue
   m_physicsScene->addActor(m_cue);
 }
+#pragma endregion Setup Pool Table
 
-void PhysicsApp::playerInput(float deltaTime)
-{ // TODO Setup Player Input
-  // Not currently functioning for W/S/A/D/Space
-
-  if (input->isKeyDown(aie::INPUT_KEY_W))
-  {
-    // [ ] W: brings it back towards the ball (fine control)
-
-    // Check to see if distance between cue and white ball is close to zero
-    if (m_cueActualDistance <= 0.01f) m_cueActualDistance = 0.0f;
-
-    // Decrease distance between white ball and cue
-    m_cueActualDistance -= 1.0f * deltaTime;  // Should (float) actualDistance be a vector2 or a length of a vector?
-  }
-
-  if (input->isKeyDown(aie::INPUT_KEY_S))
-  {
-    // [ ] S: increases distance between cue and ball
-
-    // Check to see if max distance has been reached
-    if (m_cueActualDistance > m_cueMaxDistance) // Should (float) actualDistance be a vector2 or a length of a vector?
-      m_cueActualDistance = m_cueMaxDistance;
-
-    // Increase distance between white ball and cue
-    m_cueActualDistance += 1.0f * deltaTime;
-  }
-
-  if (input->isKeyDown(aie::INPUT_KEY_SPACE))
-  {
-    // [ ] Spacebar: max velocity is stored(maxV), maxDist, actualDist
-    // [ ] Math: MaxV* actualDist / maxDist
-    
-    // Once space bar is pressed, send the cue towards the white ball with
-    // velocity
-    m_cuePosition = m_whiteBall->getPosition() + glm::vec2(1, 0);
-    glm::vec2 maxV =
-      m_cueMaxVelocity * m_cueActualDistance / m_cueMaxDistance;
-
-    if (maxV.length() > m_cueMaxVelocity.length()) maxV = m_cueMaxVelocity;
-
-    m_cue->setVelocity(maxV);
-  }
-
-  if (input->isKeyDown(aie::INPUT_KEY_A))
-  {
-    // [ ] A: rotate counter clockwise around ball
-  }
-  if (input->isKeyDown(aie::INPUT_KEY_D))
-  {
-    // [ ] D: rotate clockwise around ball
-  }
-
-  // Debug scoreboard by pressing Q
-  if (input->isKeyDown(aie::INPUT_KEY_Q))
-  {
-    m_score += 1;
-  }
-}
-
+#pragma region Scoreboard
 void PhysicsApp::drawScoreBoard()
 {
   // [X] ScoreBoard: Text object that iterates when ball sunk
@@ -321,9 +288,17 @@ void PhysicsApp::drawScoreBoard()
   m_2dRenderer->drawText(m_font, m_scoreBoardScore.c_str(), 875, 692);
 }
 
+void PhysicsApp::updateScore()
+{
+  // TODO: Increase score when a coloured ball sinks or decreases when white
+  // sinks
+}
+#pragma endregion Scoreboard
+
+#pragma region Cue Aiming Line
 void PhysicsApp::drawCueAimLine()
 {
-  // [ ] Draw line between cue and ball
+  // TODO: Draw line between cue and ball
 
   // This is called in draw() but nothing in update(), may be an issue
   m_2dRenderer->drawLine(
@@ -333,13 +308,119 @@ void PhysicsApp::drawCueAimLine()
     m_cuePosition.y + m_cue->getVelocity().y, // also tried m_cueActualDistance
     1.0f);
 }
+#pragma endregion Cue Aiming Line
 
-void PhysicsApp::updateScore()
+#pragma region Player Input
+void PhysicsApp::playerInput(float deltaTime)
+{ // TODO Setup Player Input
+  // Not currently functioning for W/S/A/D/Space
+
+  if (input->isKeyDown(aie::INPUT_KEY_W))
+  {
+    // [ ] W: brings it back towards the ball (fine control)
+
+    //// Check to see if distance between cue and white ball is close to zero
+    // if (m_cueActualDistance <= 0.01f) m_cueActualDistance = 0.0f;
+
+    //// Decrease distance between white ball and cue
+    // m_cueActualDistance -=
+    //   1.0f * deltaTime; // Should (float) actualDistance be a vector2 or a
+    //                     // length of a vector?
+  }
+
+  if (input->isKeyDown(aie::INPUT_KEY_S))
+  {
+    // [ ] S: increases distance between cue and ball
+
+    //// Check to see if max distance has been reached
+    // if (m_cueActualDistance > m_cueMaxDistance) // Should (float)
+    // actualDistance
+    //                                             // be a vector2 or a length
+    //                                             of a
+    //                                             // vector?
+    //   m_cueActualDistance = m_cueMaxDistance;
+
+    //// Increase distance between white ball and cue
+    // m_cueActualDistance += 1.0f * deltaTime;
+  }
+
+  if (input->isKeyDown(aie::INPUT_KEY_SPACE))
+  {
+    // [ ] Spacebar: max velocity is stored(maxV), maxDist, actualDist
+    // [ ] Math: MaxV* actualDist / maxDist
+
+    // Once space bar is pressed, send the cue towards the white ball with
+    // velocity
+    m_cuePosition = m_whiteBall->getPosition() + glm::vec2(1, 0);
+    glm::vec2 maxV = m_cueMaxVelocity * m_cueActualDistance / m_cueMaxDistance;
+
+    if (maxV.length() > m_cueMaxVelocity.length()) maxV = m_cueMaxVelocity;
+
+    m_cue->setVelocity(maxV);
+  }
+
+  if (input->isKeyDown(aie::INPUT_KEY_A))
+  {
+    // [ ] A: rotate counter clockwise around ball
+    m_cueRotation -= 1.0f * deltaTime;
+    rotateCueAroundWhiteBall(m_cueRotation);
+  }
+  if (input->isKeyDown(aie::INPUT_KEY_D))
+  {
+    // [ ] D: rotate clockwise around ball
+    m_cueRotation += 1.0f * deltaTime;
+    rotateCueAroundWhiteBall(m_cueRotation);
+  }
+
+  // Debug scoreboard by pressing Q
+  if (input->isKeyDown(aie::INPUT_KEY_Q))
+  {
+    m_score += 1;
+  }
+}
+#pragma endregion Player Input
+
+#pragma region Cue Rotation & Position
+void PhysicsApp::rotateCueAroundWhiteBall(float angle)
 {
-  // [ ] Increase score when a coloured ball sinks or decreases when white sinks
+  // At start, objectPos will return (54,0,0)
+  // m_cuePosition = (60,0)
+  glm::vec3 objectPos = glm::vec3(
+    getCueTipPosition().x,
+    getCueTipPosition().y,
+    0); // getCueTipPosition() returns vec2 m_cueTipPosition = m_cuePosition
+        // m_cueExtents;
+
+  glm::vec3 originPos = glm::vec3(
+    m_whiteBall->getPosition().x,
+    m_whiteBall->getPosition().y,
+    0); // At start, this will return (50,0,0)
+  glm::vec3 rotationAxis =
+    glm::vec3(0, 0, 1); // Rotate around the axis going into the screen, Z-axis
+
+  // Get difference for pivot point
+  glm::vec3 difference = objectPos - originPos;
+
+  // Rotate difference on rotation axis
+  glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), angle, rotationAxis);
+
+  glm::vec3 translation = rotation * glm::vec4(difference, 1.0f);
+
+  setCuePosition(originPos + translation); // originPos + translation;
 }
 
-// Simulations
+void PhysicsApp::setCuePosition(glm::vec3 newPos)
+{
+  glm::vec2 newCuePosition;
+  newCuePosition.x = newPos.x + m_cueExtents.x + m_ballRadius;
+  newCuePosition.y = newPos.y;
+
+  // TODO: Need to work out why it doesn't rotate like it did in clip I shared with Josh
+  m_cuePosition = newCuePosition;
+}
+#pragma endregion Cue Rotation& Position
+
+#pragma region Simulations
 void PhysicsApp::newtonsCradle()
 {
   m_physicsScene->setGravity(glm::vec2(0));
@@ -595,3 +676,4 @@ void PhysicsApp::softBodyTest()
   sb.push_back("000000......000.........000...");
   Softbody::Build(m_physicsScene, glm::vec2(-75, 0), 5.0f, 50.0f, 50.0f, sb);
 }
+#pragma endregion Simulations

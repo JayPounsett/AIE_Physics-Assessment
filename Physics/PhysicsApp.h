@@ -36,6 +36,14 @@ public:
 
   // Pool Table Game
   void setupPoolTableGame(); // All functions to create table, place balls, etc
+  
+  /// <summary>
+  /// Get the cue tip's coordinate at the edge of the white ball
+  /// </summary>
+  glm::vec2 getCueTipPosition()
+  {
+    return m_cueTipPosition = m_cuePosition - m_cueExtents;
+  }
 
 protected:
   aie::Renderer2D* m_2dRenderer;
@@ -54,6 +62,10 @@ protected:
   void drawScoreBoard();
   void drawCueAimLine();
   void updateScore();
+  void setCuePosition(glm::vec3 newCutTipPosition);
+
+  void rotateCueAroundWhiteBall(
+    float angle); // Using A & D to rotate the cue around the circle
 
   // Pool Table Game Member Variables
 protected:
@@ -76,11 +88,13 @@ protected:
 
   // Cuestick
   Box* m_cue;
+  float m_cueRotation = 0.0f;
   glm::vec2 m_cuePosition{};
+  glm::vec2 m_cueTipPosition{};
   glm::vec2 m_cueOffset; // Offset of cue from white ball
   glm::vec2 m_cueOffTablePosition = glm::vec2(
     200, 200); // Location to put cue off the table when balls are in motion
-  
+
   glm::vec2 m_cueExtents = glm::vec2(20, 1); // Size of cue stick
   const float m_cueMass = 5.0f;
   const float m_cueAngle = 0.0f;
@@ -90,7 +104,7 @@ protected:
   const glm::vec2 m_cueMaxVelocity = glm::vec2(10, 10);
   float m_cueActualDistance = 0.0f;
   float m_cueRotationAngle = 0.0f;
-  
+
   // Ball Variables
   const float m_ballMass = 1.0f;
   const float m_ballRadius = 4.0f;
