@@ -48,7 +48,13 @@ public:
   glm::vec4 getColour() const { return m_colour; }
   glm::vec2 getExtents() const { return m_extents; }
   glm::vec2 getPosition() const { return m_position; }
-  glm::vec3 getRotation() { return m_rotation; }
+  // Get the x-axis facing of the box
+  glm::vec2 getFacing()
+  {
+    return glm::vec2(glm::cos(m_orientation), -sin(m_orientation));
+  }
+  
+
 
   float getMoment() { return m_moment; }
 
@@ -62,6 +68,5 @@ protected:
 
 protected:
   glm::vec2 m_extents; // the half-edge lengths
-  glm::vec4 m_colour;
-  glm::vec3 m_rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+  glm::vec4 m_colour; 
 };

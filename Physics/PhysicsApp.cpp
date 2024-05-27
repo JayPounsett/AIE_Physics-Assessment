@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include <glm/ext.hpp>
+#include <glm/glm.hpp>
 
 #include "Box.h"
 #include "Font.h"
@@ -33,21 +34,6 @@ PhysicsApp::~PhysicsApp() {}
  ball.
  * Rotating around ball should be something like cos angle, sin angle (unit
  circle maths)
-
- https://www.youtube.com/watch?v=7j5yW5QDC2U (Math of how to rotate a vector)
- If theta is the angle, the position at the edge of the circle will be:
-    (X axis) a = (cos theta, sin theta)
-    (Y axis) b = (-sin theta, cos theta)
-    vPrime = (cueX * a) + (cueY * b) <-- This rotates the vector by the angle
- theta
-
-    Using a 2x2 matrix:
-    vPrime =    [Cos theta, -Sin theta] * [cueX]
-                [Sin theta,  Cos theta]   [cueY]
-
-  - Need to rotate around a fixed point, which is the white ball position +
- radius
-
 
  * If sink white ball, wait for ball velocity = 0, set it up at starting
  position with cue.
@@ -112,20 +98,20 @@ void PhysicsApp::draw()
 {
   // wipe the screen to the background m_colour
   clearScreen();
+  drawCueAimLine();
 
   // begin drawing sprites
   m_2dRenderer->begin();
 
   // demonstrate animation
   static float aspectRatio = 16 / 9.f;
+
   aie::Gizmos::draw2D(glm::ortho<float>(
     -100, 100, -100 / aspectRatio, 100 / aspectRatio, -1.0f, 1.0f));
 
   // output 'some text, uses the last used m_colour
   m_2dRenderer->drawText(m_font, "Press ESC to quit", 180, 5);
-
   drawScoreBoard();
-  drawCueAimLine();
 
   // done drawing sprites
   m_2dRenderer->end();
@@ -163,8 +149,7 @@ void PhysicsApp::setupPoolTableGame()
   m_cuePosition = glm::vec2(
     m_whiteBall->getPosition().x + m_cueExtents.x + m_ballRadius,
     m_whiteBall->getPosition().y);
-  
-  
+
 
   // Setup Cue Tip position for use with rotations as a box position is its
   // center point
@@ -176,7 +161,7 @@ void PhysicsApp::setupPoolTableGame()
     m_cueExtents,
     m_zeroVelocity,
     m_cueMass,
-    m_cueAngle,
+    180.0f,
     m_cueElasticity,
     m_colourBrown);
 
@@ -301,12 +286,35 @@ void PhysicsApp::drawCueAimLine()
   // TODO: Draw line between cue and ball
 
   // This is called in draw() but nothing in update(), may be an issue
-  m_2dRenderer->drawLine(
-    m_cuePosition.x,
-    m_cuePosition.y,
-    m_cuePosition.x + m_cue->getVelocity().x, // also tried m_cueActualDistance
-    m_cuePosition.y + m_cue->getVelocity().y, // also tried m_cueActualDistance
-    1.0f);
+  // m_2dRenderer->drawLine(
+  //  m_cuePosition.x,
+  //  m_cuePosition.y,
+  //  m_cuePosition.x + m_cue->getVelocity().x, // also tried
+  //  m_cueActualDistance m_cuePosition.y + m_cue->getVelocity().y, // also
+  //  tried m_cueActualDistance 1.0f);
+
+  // Set Origin to the cue's tip
+  // DrawLine() has the origin as the bottom left while objects are using the
+  // middle of the window
+
+  m_cueTipPosition = getCueTipPosition();
+  glm::vec2 cueAimLine =
+    glm::vec2(getCueTipPosition().x - 100, getCueTipPosition().y);
+
+  // This is (54, 0) when origin is windowWidth/2, windowHeight/2 as the
+  // renderer's origin is bottom left.
+
+  aie::Gizmos::add2DLine(m_cueTipPosition, cueAimLine, m_colourWhite);
+
+  // m_2dRenderer->drawLine(
+  //   m_cueTipPosition.x +
+  //     getWindowWidth() /
+  //       2, // This is assuming 0,0 is bottom left, so need to adjust
+  //   m_cueTipPosition.y + getWindowHeight() / 2,
+  //   m_cueTipPosition.x + getWindowWidth() / 2 -
+  //     500, // also tried m_cueActualDistance
+  //   m_cueTipPosition.y + getWindowHeight() / 2, // also tried
+  //   m_cueActualDistance 1.0f);
 }
 #pragma endregion Cue Aiming Line
 
@@ -351,25 +359,27 @@ void PhysicsApp::playerInput(float deltaTime)
 
     // Once space bar is pressed, send the cue towards the white ball with
     // velocity
-    m_cuePosition = m_whiteBall->getPosition() + glm::vec2(1, 0);
-    glm::vec2 maxV = m_cueMaxVelocity * m_cueActualDistance / m_cueMaxDistance;
-
-    if (maxV.length() > m_cueMaxVelocity.length()) maxV = m_cueMaxVelocity;
-
-    m_cue->setVelocity(maxV);
   }
 
   if (input->isKeyDown(aie::INPUT_KEY_A))
   {
-    // [ ] A: rotate counter clockwise around ball
-    m_cueRotation -= 1.0f * deltaTime;
-    rotateCueAroundWhiteBall(m_cueRotation);
+    // [ ] A: rotate clockwise around ball
+    m_cueAngle = m_cue->getOrientation();
+    m_cueAngle += 1.0f;
+
+    m_cue->setOrientation(m_cueAngle);
+    m_cue->setPosition(m_cue->getFacing() * deltaTime);
+    rotateCueAroundWhiteBall();
   }
   if (input->isKeyDown(aie::INPUT_KEY_D))
   {
-    // [ ] D: rotate clockwise around ball
-    m_cueRotation += 1.0f * deltaTime;
-    rotateCueAroundWhiteBall(m_cueRotation);
+    // [ ] D: rotate counter-clockwise around ball
+    m_cueAngle = m_cue->getOrientation();
+    m_cueAngle -= 1.0f;
+
+    m_cue->setOrientation(m_cueAngle);
+    m_cue->setPosition(m_cue->getFacing() * deltaTime);
+    rotateCueAroundWhiteBall();
   }
 
   // Debug scoreboard by pressing Q
@@ -380,45 +390,38 @@ void PhysicsApp::playerInput(float deltaTime)
 }
 #pragma endregion Player Input
 
-#pragma region Cue Rotation & Position
-void PhysicsApp::rotateCueAroundWhiteBall(float angle)
+void PhysicsApp::rotateCueAroundWhiteBall()
 {
-  // At start, objectPos will return (54,0,0)
-  // m_cuePosition = (60,0)
-  glm::vec3 objectPos = glm::vec3(
-    getCueTipPosition().x,
-    getCueTipPosition().y,
-    0); // getCueTipPosition() returns vec2 m_cueTipPosition = m_cuePosition
-        // m_cueExtents;
+  // Calculate angle between cue and white ball
+  float angle = m_cue->getOrientation();
 
-  glm::vec3 originPos = glm::vec3(
-    m_whiteBall->getPosition().x,
-    m_whiteBall->getPosition().y,
-    0); // At start, this will return (50,0,0)
-  glm::vec3 rotationAxis =
-    glm::vec3(0, 0, 1); // Rotate around the axis going into the screen, Z-axis
+  // glm::vec2 cueFacingVector = m_cue->getFacing(); // Returns (-1, 0)
+  //// Calculate the distance vector from the cue to the white ball
+  // auto normalizedVector =
+  //  glm::normalize(m_whiteBall->getPosition() - m_cue->getPosition());
+  //// ((50,0), (74, 0)) = (-24,0) = (-1, 0)
 
-  // Get difference for pivot point
-  glm::vec3 difference = objectPos - originPos;
+  // float angleInDegrees = glm::dot(cueFacingVector, normalizedVector);
 
-  // Rotate difference on rotation axis
-  glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), angle, rotationAxis);
+  // m_cue->setOrientation(angleInDegrees);
 
-  glm::vec3 translation = rotation * glm::vec4(difference, 1.0f);
 
-  setCuePosition(originPos + translation); // originPos + translation;
+  //// Calculate the distance on the x-axis between cue and white ball
+  // auto distance =
+  //   glm::distance(m_cue->getPosition(), m_whiteBall->getPosition());
+  //// float angle = m_cue->getOrientation();
+  // auto angleVector = m_cue->getFacing();
+
+  //// Dot product the cue & white ball position to get the cos(angle)
+  // glm::vec2 normaliseWhiteBallPosition =
+  //   glm::normalize(m_whiteBall->getPosition());
+  // auto dotProductResult =
+  //   glm::dot(glm::vec2(distance, 0), -normaliseWhiteBallPosition);
+
+  //// Convert orientation to degrees and set cue's orientation
+  // float angleInRadians = glm::acos(dotProductResult);
+  // m_cue->setOrientation(glm::degrees(angleInRadians));
 }
-
-void PhysicsApp::setCuePosition(glm::vec3 newPos)
-{
-  glm::vec2 newCuePosition;
-  newCuePosition.x = newPos.x + m_cueExtents.x + m_ballRadius;
-  newCuePosition.y = newPos.y;
-
-  // TODO: Need to work out why it doesn't rotate like it did in clip I shared with Josh
-  m_cuePosition = newCuePosition;
-}
-#pragma endregion Cue Rotation& Position
 
 #pragma region Simulations
 void PhysicsApp::newtonsCradle()
