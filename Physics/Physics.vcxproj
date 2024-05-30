@@ -177,6 +177,7 @@
     <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="PhysicsScene.cpp" />
     <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="PoolTableGame.cpp" />
     <ClCompile Include="RigidBody.cpp" />
     <ClCompile Include="Softbody.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="PhysicsObject.h" />
     <ClInclude Include="PhysicsScene.h" />
     <ClInclude Include="Plane.h" />
+    <ClInclude Include="PoolTableGame.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Softbody.h" />
     <ClInclude Include="Sphere.h" />
