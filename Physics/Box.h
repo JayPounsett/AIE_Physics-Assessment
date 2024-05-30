@@ -15,7 +15,7 @@ public:
         BOX, position, velocity, mass, elasticity, 0.0f, m_moment) {
     m_extents = extents;
     m_colour = colour;
-    m_orientation = setOrientation(0.0f);
+    m_orientationRadians = setOrientation(0.0f);
     m_moment = setMoment(mass, extents.x, extents.y);
   };
   Box(
@@ -27,10 +27,10 @@ public:
     float elasticity,
     glm::vec4 colour)
     : Rigidbody(
-        BOX, position, velocity, mass, elasticity, m_orientation, m_moment) {
+        BOX, position, velocity, mass, elasticity, m_orientationRadians, m_moment) {
     m_extents = extents;
     m_colour = colour;
-    m_orientation = setOrientation(angle);
+    m_orientationRadians = setOrientation(angle);
     m_moment = setMoment(mass, extents.x, extents.y);
   };
 
@@ -45,17 +45,19 @@ public:
     glm::vec2& edgeNormal);
   virtual void draw();
 
+  void drawCueAimLine();
+
   glm::vec4 getColour() const { return m_colour; }
   glm::vec2 getExtents() const { return m_extents; }
   glm::vec2 getPosition() const { return m_position; }
   // Get the x-axis facing of the box
   glm::vec2 getFacing()
   {
-    return glm::vec2(glm::cos(m_orientation), -sin(m_orientation));
+    return glm::vec2(
+      glm::cos(this->getOrientationRadians()),
+      -sin(this->getOrientationRadians()));
   }
-  
-
-
+ 
   float getMoment() { return m_moment; }
 
   float getHeight() { return 2.0f * m_extents.y; }

@@ -4,15 +4,15 @@
 
 Box::~Box() {}
 
-//void Box::fixedUpdate(glm::vec2 gravity, float timeStep) {
-//  Rigidbody::fixedUpdate(gravity, timeStep);
+// void Box::fixedUpdate(glm::vec2 gravity, float timeStep) {
+//   Rigidbody::fixedUpdate(gravity, timeStep);
 //
-//  // store the local axes
-//  float cs = cosf(m_orientation);
-//  float sn = sinf(m_orientation);
-//  m_localX = glm::normalize(glm::vec2(cs, sn));
-//  m_localY = glm::normalize(glm::vec2(-sn, cs));
-//}
+//   // store the local axes
+//   float cs = cosf(m_orientation);
+//   float sn = sinf(m_orientation);
+//   m_localX = glm::normalize(glm::vec2(cs, sn));
+//   m_localY = glm::normalize(glm::vec2(-sn, cs));
+// }
 
 bool Box::checkBoxCorners(
   const Box& box,
@@ -29,8 +29,10 @@ bool Box::checkBoxCorners(
   bool first = true;
 
   // loop over all corners of the other box
-  for (float x = -box.getExtents().x; x < boxW; x += boxW) {
-    for (float y = -box.getExtents().y; y < boxH; y += boxH) {
+  for (float x = -box.getExtents().x; x < boxW; x += boxW)
+  {
+    for (float y = -box.getExtents().y; y < boxH; y += boxH)
+    {
       // get the position in world space
       glm::vec2 p = box.getPosition() + x * box.m_localX + y * box.m_localY;
 
@@ -48,7 +50,8 @@ bool Box::checkBoxCorners(
       // if this corner is inside the box, add it to the list of contact points
       if (
         p0.x >= -m_extents.x && p0.x <= m_extents.x && p0.y >= -m_extents.y &&
-        p0.y <= m_extents.y) {
+        p0.y <= m_extents.y)
+      {
         numLocalContacts++;
         localContact += p0;
       }
@@ -72,14 +75,16 @@ bool Box::checkBoxCorners(
 
   // find the minimum penetration vector as a penetration amount and normal
   float pen0 = m_extents.x - minX;
-  if (pen0 > 0 && (pen0 < pen || pen == 0)) {
+  if (pen0 > 0 && (pen0 < pen || pen == 0))
+  {
     edgeNormal = m_localX;
     pen = pen0;
     result = true;
   }
 
   pen0 = maxX + m_extents.x;
-  if (pen0 > 0 && (pen0 < pen || pen == 0)) {
+  if (pen0 > 0 && (pen0 < pen || pen == 0))
+  {
     edgeNormal = -m_localX;
     pen = pen0;
     result = true;
@@ -103,7 +108,8 @@ bool Box::checkBoxCorners(
   return result;
 }
 
-void Box::draw() {
+void Box::draw()
+{
   // draw using local axes
   glm::vec2 p1 = m_position - m_localX * m_extents.x - m_localY * m_extents.y;
   glm::vec2 p2 = m_position + m_localX * m_extents.x - m_localY * m_extents.y;
@@ -113,3 +119,22 @@ void Box::draw() {
   aie::Gizmos::add2DTri(p1, p2, p4, m_colour);
   aie::Gizmos::add2DTri(p1, p4, p3, m_colour);
 }
+
+#pragma region Cue Aiming Line
+void Box::drawCueAimLine()
+{
+  // TODO: Draw cue aiming line
+  // TODO: Line not updating as cue is moved
+  // TODO: Add in distance variable for when cue is moved forward/back to show
+  // how far it may move
+
+  // Store cue tip position
+  glm::vec2 cueTipPosition = glm::vec2(
+    this->getPosition().x - this->getExtents().x, this->getPosition().y);
+
+  // Vector for the line's end point
+  glm::vec2 cueAimLineEnd = glm::vec2(cueTipPosition.x - 100, cueTipPosition.y);
+
+  aie::Gizmos::add2DLine(cueTipPosition, cueAimLineEnd, glm::vec4(1, 1, 1, 1));
+}
+#pragma endregion Cue Aiming Line

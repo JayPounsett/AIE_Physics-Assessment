@@ -10,8 +10,8 @@ Rigidbody::~Rigidbody() {}
 
 void Rigidbody::fixedUpdate(glm::vec2 gravity, float timeStep)
 {
-  float cs = cosf(m_orientation);
-  float sn = sinf(m_orientation);
+  float cs = cosf(m_orientationRadians);
+  float sn = sinf(m_orientationRadians);
   m_localX = glm::normalize(glm::vec2(cs, sn));
   m_localY = glm::normalize(glm::vec2(-sn, cs));
 
@@ -26,7 +26,7 @@ void Rigidbody::fixedUpdate(glm::vec2 gravity, float timeStep)
   m_position += m_velocity * timeStep;
   applyForce(gravity * m_mass * timeStep, glm::vec2(0));
 
-  m_orientation += m_angularVelocity * timeStep;
+  m_orientationRadians += m_angularVelocity * timeStep;
 
   m_velocity -= m_velocity * m_linearDrag * timeStep;
   m_angularVelocity -= m_angularVelocity * m_angularDrag * timeStep;

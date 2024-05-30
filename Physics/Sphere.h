@@ -17,7 +17,7 @@ public:
         velocity,
         mass,
         elasticity,
-        m_orientation = 0.0f,
+        m_orientationRadians = 0.0f,
         0.5f * mass * radius * radius) {
     m_radius = radius;
     m_colour = colour;

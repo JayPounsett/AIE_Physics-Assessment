@@ -84,6 +84,7 @@ void PhysicsApp::update(float deltaTime)
   m_physicsScene->update(deltaTime);
   m_physicsScene->draw();
 
+  m_cue->drawCueAimLine();
   playerInput(deltaTime);
   updateScore();
 
@@ -98,7 +99,6 @@ void PhysicsApp::draw()
 {
   // wipe the screen to the background m_colour
   clearScreen();
-  drawCueAimLine();
 
   // begin drawing sprites
   m_2dRenderer->begin();
@@ -111,6 +111,7 @@ void PhysicsApp::draw()
 
   // output 'some text, uses the last used m_colour
   m_2dRenderer->drawText(m_font, "Press ESC to quit", 180, 5);
+  
   drawScoreBoard();
 
   // done drawing sprites
@@ -231,12 +232,6 @@ void PhysicsApp::setupPoolTableGame()
   m_pockets.push_back(m_pocketBottomMid);
   m_pockets.push_back(m_pocketBottomRight);
 
-  // Cue
-  // m_cue->isKinematic(true);
-
-  // White Ball
-  // m_whiteBall->setKinematic(true);
-
   // Add objects to scene
   // Table
   m_physicsScene->addActor(m_tableEdgeLeft);
@@ -279,44 +274,6 @@ void PhysicsApp::updateScore()
   // sinks
 }
 #pragma endregion Scoreboard
-
-#pragma region Cue Aiming Line
-void PhysicsApp::drawCueAimLine()
-{
-  // TODO: Draw line between cue and ball
-
-  // This is called in draw() but nothing in update(), may be an issue
-  // m_2dRenderer->drawLine(
-  //  m_cuePosition.x,
-  //  m_cuePosition.y,
-  //  m_cuePosition.x + m_cue->getVelocity().x, // also tried
-  //  m_cueActualDistance m_cuePosition.y + m_cue->getVelocity().y, // also
-  //  tried m_cueActualDistance 1.0f);
-
-  // Set Origin to the cue's tip
-  // DrawLine() has the origin as the bottom left while objects are using the
-  // middle of the window
-
-  m_cueTipPosition = getCueTipPosition();
-  glm::vec2 cueAimLine =
-    glm::vec2(getCueTipPosition().x - 100, getCueTipPosition().y);
-
-  // This is (54, 0) when origin is windowWidth/2, windowHeight/2 as the
-  // renderer's origin is bottom left.
-
-  aie::Gizmos::add2DLine(m_cueTipPosition, cueAimLine, m_colourWhite);
-
-  // m_2dRenderer->drawLine(
-  //   m_cueTipPosition.x +
-  //     getWindowWidth() /
-  //       2, // This is assuming 0,0 is bottom left, so need to adjust
-  //   m_cueTipPosition.y + getWindowHeight() / 2,
-  //   m_cueTipPosition.x + getWindowWidth() / 2 -
-  //     500, // also tried m_cueActualDistance
-  //   m_cueTipPosition.y + getWindowHeight() / 2, // also tried
-  //   m_cueActualDistance 1.0f);
-}
-#pragma endregion Cue Aiming Line
 
 #pragma region Player Input
 void PhysicsApp::playerInput(float deltaTime)
@@ -363,23 +320,26 @@ void PhysicsApp::playerInput(float deltaTime)
 
   if (input->isKeyDown(aie::INPUT_KEY_A))
   {
-    // [ ] A: rotate clockwise around ball
-    m_cueAngle = m_cue->getOrientation();
+    // TODO: A - rotate clockwise around ball
+    m_cueAngle = glm::degrees(m_cue->getOrientationRadians());
     m_cueAngle += 1.0f;
 
     m_cue->setOrientation(m_cueAngle);
     m_cue->setPosition(m_cue->getFacing() * deltaTime);
-    rotateCueAroundWhiteBall();
+
+    // TODO: Cue is rotating around it's origin. I need to
+    // m_cue->setPosition(m_cue->getFacing() * deltaTime);
+    // rotateCueAroundWhiteBall();
   }
   if (input->isKeyDown(aie::INPUT_KEY_D))
   {
     // [ ] D: rotate counter-clockwise around ball
-    m_cueAngle = m_cue->getOrientation();
+    m_cueAngle = glm::degrees(m_cue->getOrientationRadians());
     m_cueAngle -= 1.0f;
 
     m_cue->setOrientation(m_cueAngle);
     m_cue->setPosition(m_cue->getFacing() * deltaTime);
-    rotateCueAroundWhiteBall();
+    // rotateCueAroundWhiteBall();
   }
 
   // Debug scoreboard by pressing Q
@@ -393,7 +353,7 @@ void PhysicsApp::playerInput(float deltaTime)
 void PhysicsApp::rotateCueAroundWhiteBall()
 {
   // Calculate angle between cue and white ball
-  float angle = m_cue->getOrientation();
+  float angle = m_cue->getOrientationRadians();
 
   // glm::vec2 cueFacingVector = m_cue->getFacing(); // Returns (-1, 0)
   //// Calculate the distance vector from the cue to the white ball

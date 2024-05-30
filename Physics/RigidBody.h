@@ -22,7 +22,7 @@ public:
     m_velocity = velocity;
     m_mass = mass;
     m_elasticity = elasticity;
-    m_orientation = orientation;
+    m_orientationRadians = orientation;
     m_moment = moment;
   };
 
@@ -45,10 +45,14 @@ public:
   // Setters
   void setKinematic(bool state) { m_isKinematic = state; }
   
-  // Take orientation as an angle and sets variable as radians
-  float setOrientation(float angle)
+  /// <summary>
+  /// Set orientation using an angle
+  /// </summary>
+  /// <param name="Angle in degrees"></param>
+  /// <returns>Angle in radians</returns>
+  float setOrientation(float angleDegrees)
   {
-    return m_orientation = glm::radians(angle);
+    return m_orientationRadians = glm::radians(angleDegrees);
   }
 
   void setPosition(glm::vec2 newPosition) { m_position = newPosition; }
@@ -75,7 +79,7 @@ public:
   glm::vec2 getPosition() const { return m_position; }
   
   // Return orientation as degrees
-  float getOrientation() const { return glm::degrees(m_orientation); }
+  float getOrientationRadians() const { return m_orientationRadians; }
   glm::vec2 getVelocity() const { return m_velocity; }
 
 
@@ -83,7 +87,7 @@ protected:
   glm::vec2 m_position{0, 0};
   glm::vec2 m_velocity{0, 0};
   float m_mass = 0.1f;
-  float m_orientation = 0.0f; // Orientation in radians
+  float m_orientationRadians = 0.0f; // Orientation in radians
   float m_angularVelocity = 0.0f;
   float m_moment = 0.0f;
 

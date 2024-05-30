@@ -38,7 +38,7 @@ public:
   void setupPoolTableGame(); // All functions to create table, place balls, etc
   
   /// <summary>
-  /// Get the cue tip's coordinate at the edge of the white ball
+  /// Get the cue tip's coordinate
   /// </summary>
   glm::vec2 getCueTipPosition()
   {
@@ -60,7 +60,6 @@ protected:
   // Setting up the player inputs
   void playerInput(float deltaTime);
   void drawScoreBoard();
-  void drawCueAimLine();
   void updateScore();
 
   void rotateCueAroundWhiteBall(); // Using A & D to rotate the cue around the white ball
