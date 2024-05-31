@@ -54,10 +54,9 @@ public:
   glm::vec2 getFacing()
   {
     return glm::vec2(
-      glm::cos(this->getOrientationRadians()),
-      -sin(this->getOrientationRadians()));
+      glm::cos(this->getOrientationRadians()), glm::sin(-this->getOrientationRadians()));
   }
- 
+
   float getMoment() { return m_moment; }
 
   float getHeight() { return 2.0f * m_extents.y; }

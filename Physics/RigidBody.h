@@ -55,8 +55,8 @@ public:
     return m_orientationRadians = glm::radians(angleDegrees);
   }
 
-  void setPosition(glm::vec2 newPosition) { m_position = newPosition; }
-  void setVelocity(glm::vec2 newVelocity) { m_velocity = newVelocity; }
+  void setPosition(glm::vec2 newPosition) { this->m_position = newPosition; }
+  void setVelocity(glm::vec2 newVelocity) { this->m_velocity = newVelocity; }
 
   // Getters
   bool isKinematic(bool state) const { return m_isKinematic; }
@@ -76,9 +76,9 @@ public:
   glm::vec2 getLocalX() const { return m_localX; }
   glm::vec2 getLocalY() const { return m_localY; }
   float getMoment() const { return m_isKinematic ? INT_MAX : m_moment; }
-  glm::vec2 getPosition() const { return m_position; }
+  glm::vec2 getPosition() { return this->m_position; }
   
-  // Return orientation as degrees
+  // Return orientation as radians
   float getOrientationRadians() const { return m_orientationRadians; }
   glm::vec2 getVelocity() const { return m_velocity; }
 

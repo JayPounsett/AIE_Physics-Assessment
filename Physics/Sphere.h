@@ -29,9 +29,10 @@ public:
 
   float getRadius() { return m_radius; }
   glm::vec4 getColour() { return m_colour; }
-  glm::vec2 setVelocity(glm::vec2 velocity) { this->m_velocity = velocity; }
+  void setVelocity(glm::vec2 velocity) { this->m_velocity = velocity; }
 
 protected:
+  bool isCollidable = true;
   float m_radius;
   glm::vec4 m_colour;
 };

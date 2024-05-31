@@ -23,7 +23,7 @@ public:
   Plane() : PhysicsObject(ShapeType::PLANE)
   {
     m_distanceToOrigin = 0;
-    m_normal = glm::vec2(0, 1);
+    m_normal = glm::vec3(0, 1, 0);
   };
   ~Plane();
 
