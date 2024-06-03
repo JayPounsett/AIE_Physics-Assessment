@@ -321,22 +321,21 @@ void PoolTableGame::updateKeyboardInput(
 
   if (input->isKeyDown(aie::INPUT_KEY_A))
   {
-    m_cueAngle += 1 * m_speed * deltaTime;
-    m_cue->setOrientation(m_cueAngle);
+    //m_cueAngle += 1 * m_speed * deltaTime;
+    //m_cue->setOrientation(m_cueAngle);
     // The above rotates the cue left around it's own position.
     // This should be around the white ball's position.
 
-    // rotateCue(false);
+    rotateCue(false);
   }
   if (input->isKeyDown(aie::INPUT_KEY_D))
   {
-    m_cueAngle -= 1 * m_speed * deltaTime;
-    m_cue->setOrientation(m_cueAngle);
+    // m_cueAngle -= 1 * m_speed * deltaTime;
+    // m_cue->setOrientation(m_cueAngle);
     // The above rotates the cue right around it's own position.
     // This should be around the white ball's position.
 
-
-    // rotateCue(true);
+    rotateCue(true);
   }
 
   if (input->isKeyDown(aie::INPUT_KEY_SPACE))
@@ -388,10 +387,10 @@ void PoolTableGame::rotateCue(bool clockwise)
   // Returns (-1,0) therefore white ball is left of the cue (Correct)
 
   // Find the cos(radians) between the two vectors
-  auto dotProduct = glm::dot(cueFacing, directionVector);
+  float dotProduct = glm::dot(cueFacing, directionVector);
 
   // Angle = -cos(dot(Vector, CueFacing))
-  newAngle = -glm::cos(dotProduct);
+  newAngle = glm::acos(dotProduct);
   angleDegrees = glm::degrees(newAngle);
 
   if (clockwise)

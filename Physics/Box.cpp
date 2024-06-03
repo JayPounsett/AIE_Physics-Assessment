@@ -145,11 +145,11 @@ glm::vec2 Box::getFacing()
   float xValue = 0.0f;
   float yValue = 0.0f;
 
-  xValue = glm::cos(radians); // Should and does return: -1
-  yValue = glm::sin(-radians); // Should return 0, returning 8.74227766e-08
+  xValue = glm::cos(radians); 
+  yValue = glm::sin(-radians); 
 
-  return glm::vec2(xValue, yValue);
-  // Should return (-1, 0)
-  // Returned result (-1, 8.74227766e-08)
+  glm::vec2 normVector = glm::normalize(glm::vec2(xValue, yValue));
+
+  return normVector;
   }
 #pragma endregion Cue Aiming Line
