@@ -15,7 +15,7 @@ public:
         BOX, position, velocity, mass, elasticity, 0.0f, m_moment) {
     m_extents = extents;
     m_colour = colour;
-    m_orientationRadians = setOrientation(0.0f);
+    this->m_orientationRadians = 0.0f;
     m_moment = setMoment(mass, extents.x, extents.y);
   };
   Box(
@@ -27,10 +27,10 @@ public:
     float elasticity,
     glm::vec4 colour)
     : Rigidbody(
-        BOX, position, velocity, mass, elasticity, m_orientationRadians, m_moment) {
+        BOX, position, velocity, mass, elasticity, angle, m_moment) {
     m_extents = extents;
     m_colour = colour;
-    m_orientationRadians = setOrientation(angle);
+    this->setOrientation(angle);
     m_moment = setMoment(mass, extents.x, extents.y);
   };
 

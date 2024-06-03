@@ -50,9 +50,10 @@ public:
   /// </summary>
   /// <param name="Angle in degrees"></param>
   /// <returns>Angle in radians</returns>
-  float setOrientation(float angleDegrees)
+  void setOrientation(float angleDegrees)
   {
-    return m_orientationRadians = glm::radians(angleDegrees);
+  // Not assigning value!
+    this->m_orientationRadians = glm::radians(angleDegrees);
   }
 
   void setPosition(glm::vec2 newPosition) { this->m_position = newPosition; }

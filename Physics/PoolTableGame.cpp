@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "PhysicsScene.h"
+#include <iostream>
 
 PoolTableGame::~PoolTableGame() {}
 
@@ -279,11 +280,6 @@ void PoolTableGame::updateCueVectors()
 void PoolTableGame::updateKeyboardInput(
   const float& deltaTime, aie::Input* input)
 {
-  if (this->m_cueAngle > 360.0f || this->m_cueAngle < -360.0f)
-  {
-    this->m_cueAngle = 0.0f;
-  }
-
   if (input->isKeyDown(aie::INPUT_KEY_W))
   {
     // Check if the cue is at the ball, stop input if it is
@@ -321,21 +317,22 @@ void PoolTableGame::updateKeyboardInput(
 
   if (input->isKeyDown(aie::INPUT_KEY_A))
   {
-    //m_cueAngle += 1 * m_speed * deltaTime;
-    //m_cue->setOrientation(m_cueAngle);
+    m_cueAngle += 1 * m_speed * deltaTime;
+    m_cue->setOrientation(m_cueAngle);
     // The above rotates the cue left around it's own position.
     // This should be around the white ball's position.
 
-    rotateCue(false);
+    //rotateCue(false);
   }
   if (input->isKeyDown(aie::INPUT_KEY_D))
   {
-    // m_cueAngle -= 1 * m_speed * deltaTime;
-    // m_cue->setOrientation(m_cueAngle);
+    m_cueAngle -= 1 * m_speed * deltaTime;
+    m_cue->setOrientation(m_cueAngle);
+
     // The above rotates the cue right around it's own position.
     // This should be around the white ball's position.
 
-    rotateCue(true);
+    //rotateCue(true);
   }
 
   if (input->isKeyDown(aie::INPUT_KEY_SPACE))
@@ -362,45 +359,39 @@ void PoolTableGame::updateKeyboardInput(
 
 void PoolTableGame::rotateCue(bool clockwise)
 {
-#pragma region Psuedocode
-  // Subtract actual position from target position, then normalize it to be a
-  // unit vector. This gives the direction of the cue with regard to the white
-  // ball.
-
-  // Direction = normalized(whiteBall - cue)
-  // Angle Between Two Vectors
-  //
-
-#pragma endregion Psuedocode
-
   auto cuePosition = m_cue->getPosition();
   auto whiteBallPosition = m_whiteBall->getPosition();
   auto cueFacing = m_cue->getFacing();
+  auto whiteBallToCueVector = whiteBallPosition - cuePosition;
 
-  glm::vec2 whiteBallToCueVector = whiteBallPosition - cuePosition;
+  auto vector = glm::normalize(whiteBallPosition - cuePosition);
 
-  float angleDegrees = 0.0f;
-  float newAngle = 0.0f;
+  auto dotProduct = glm::dot(cueFacing, vector);
+  auto newAngle = glm::acos(dotProduct);
+  auto newAngleInDegrees = glm::degrees(newAngle);
 
-  // Target - Origin
-  glm::vec2 directionVector = glm::normalize(whiteBallPosition - cuePosition);
-  // Returns (-1,0) therefore white ball is left of the cue (Correct)
+  //if (clockwise)
+  //{
+  //  newAngleInDegrees -= 1;
+  //}
+  //else
+  //{
+  //  newAngleInDegrees += 1;
+  //}
 
-  // Find the cos(radians) between the two vectors
-  float dotProduct = glm::dot(cueFacing, directionVector);
+  std::cout << "-----------------" << std::endl;
+  std::cout << "Cue Position: (" << cuePosition.x << ", " << cuePosition.y
+            << ")" << std::endl;
+  std::cout << "White Ball Position: (" << whiteBallPosition.x << ", "
+            << whiteBallPosition.y << ")" << std::endl;
+  std::cout << "White Ball to Cue Vector: (" << whiteBallToCueVector.x << ", "
+            << whiteBallToCueVector.y << ")" << std::endl;
+  std::cout << "Cue Facing: (" << cueFacing.x << ", " << cueFacing.y << ")"
+            << std::endl;
+  std::cout << "DotProduct: " << dotProduct << std::endl;
+  std::cout << "Angle (Radians): " << newAngle << std::endl;
+  std::cout << "Angle (Degrees): " << newAngleInDegrees << std::endl;
+  std::cout << "-----------------" << std::endl;
 
-  // Angle = -cos(dot(Vector, CueFacing))
-  newAngle = glm::acos(dotProduct);
-  angleDegrees = glm::degrees(newAngle);
-
-  if (clockwise)
-  {
-    angleDegrees -= 1;
-  }
-  else
-  {
-    angleDegrees += 1;
-  }
-
-  m_cue->setOrientation(angleDegrees);
+  m_cue->setOrientation(newAngleInDegrees);
 }
