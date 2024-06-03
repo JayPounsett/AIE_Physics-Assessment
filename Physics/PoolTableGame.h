@@ -32,13 +32,11 @@ public:
   void update(float deltaTime, aie::Input* input);
   void draw(aie::Renderer2D* renderer, aie::Font* font);
 
-  // Pool Table Game
-  void setupPoolTableGame(
-    PhysicsScene*
-      physicsScene); // All functions to create table, place balls, etc
+  void setupPoolTableGame(PhysicsScene* physicsScene);
 
-  glm::vec2 getPosition() { return this->m_cuePosition; }
-
+  // Getters
+  Box* getCue() { return m_cue; }
+  glm::vec2 getPosition() const { return this->m_cuePosition; }
   glm::mat4 getCueMatrix()
   {
     this->updateCueVectors();
@@ -51,155 +49,37 @@ public:
 
     return this->m_cueMatrix;
   }
-
-  // Getters
-  Box* getCue() { return m_cue; }
-
-  bool hasBallVelocity()
-  {
-    for (auto ball : m_balls)
-    {
-      if (
-        glm::abs(ball->getVelocity().x) > 0.5f ||
-        glm::abs(ball->getVelocity().y) > 0.5f)
-      {
-        return true;
-      }
-    }
-    return false;
-  }
-
   glm::vec2 getCueTipPosition()
   {
     return m_cueTipPosition = glm::vec2(
              this->getPosition().x - m_cueExtents.x, this->getPosition().y);
   }
+  float getAngleBetweenVectors(glm::vec2 v1, glm::vec2 v2);
 
-  // Setting up the player inputs
-  // void playerInput(float deltaTime, aie::Input* input);
+  bool hasBallVelocity();
   void drawScoreBoard(aie::Renderer2D* renderer, aie::Font* font);
   void updateScore();
-  // void rotateCue(); // Using A & D to rotate the cue around the white ball
+  void rotateCue(bool clockwise);
 
 protected:
-  void updateCueVectors()
-  {
-    // Store front vector
-    this->m_front =
-      glm::vec3(getCue()->getFacing().x, getCue()->getFacing().y, 0.0f);
-    this->m_cuePosition =
-      glm::vec2(getCueTipPosition().x, getCueTipPosition().y);
-  };
-
   void updateInput(const float& deltaTime, aie::Input* input)
   {
     this->updateKeyboardInput(deltaTime, input);
   };
 
-  void updateKeyboardInput(const float& deltaTime, aie::Input* input)
-  {
-    if (this->m_cueAngle > 360.0f || this->m_cueAngle < -360.0f)
-    {
-      this->m_cueAngle = 0.0f;
-    }
-
-    if (input->isKeyDown(aie::INPUT_KEY_W))
-    {
-      // Check if the cue is at the ball, stop input if it is
-      if (
-        m_cue->getPosition().x <=
-        (m_whiteBall->getPosition().x + m_ballRadius) + m_cueExtents.x)
-      {
-        return;
-      }
-
-      m_cuePosition = m_cue->getPosition();
-
-      m_cuePosition +=
-        glm::vec2(getCue()->getFacing().x, getCue()->getFacing().y) * m_speed *
-        deltaTime;
-      m_cue->setPosition(m_cuePosition);
-    }
-    if (input->isKeyDown(aie::INPUT_KEY_S))
-    {
-      // Check if the cue is at it's max distance, stop input if it is
-      if (
-        m_cue->getPosition().x >=
-        (m_whiteBall->getPosition().x + m_ballRadius) + m_cueExtents.x +
-          m_cueMaxDistance)
-      {
-        return;
-      }
-
-      m_cuePosition = m_cue->getPosition();
-
-      m_cuePosition -=
-        glm::vec2(getCue()->getFacing().x, getCue()->getFacing().y) * m_speed *
-        deltaTime;
-      m_cue->setPosition(m_cuePosition);
-    }
-
-    if (input->isKeyDown(aie::INPUT_KEY_A))
-    {
-      m_cueAngle += 1 * this->m_speed * deltaTime;
-      m_cue->setOrientation(m_cueAngle);
-      setFacing();
-    }
-    if (input->isKeyDown(aie::INPUT_KEY_D))
-    {
-      m_cueAngle -= 1 * this->m_speed * deltaTime;
-      m_cue->setOrientation(m_cueAngle);
-      setFacing();
-    }
-
-    if (input->isKeyDown(aie::INPUT_KEY_SPACE))
-    {
-      m_cuePosition = m_cue->getPosition();
-      glm::vec2 whiteBallPos = m_whiteBall->getPosition();
-
-      glm::vec2 cueVelocity = glm::vec2(m_cuePosition - whiteBallPos);
-
-      m_cue->setVelocity(-cueVelocity * 2.0f);
-
-      /*m_cue->applyForce(
-        -m_cuePosition,
-        whiteBallPos);*/
-    }
-  };
+  // Keyboard inputs
+  void updateKeyboardInput(const float& deltaTime, aie::Input* input);
+  
+  void updateCueVectors();
 
 protected:
-  glm::mat4 setFacing()
-  {
-    // Cue to always face the white ball
-    glm::vec3 cuePosition =
-      glm::vec3(this->getPosition().x, this->getPosition().y, 0.0f);
-
-    glm::vec3 whiteBallPosition = glm::vec3(
-      m_whiteBall->getPosition().x, m_whiteBall->getPosition().y, 0.0f);
-
-    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f); // up vector for the cue
-
-    // TODO: Get angle between the vectors
-    // Rotating left and right around white ball
-    // - Set position
-    //- Calculate angle between cue and ball using vector & dot product.
-    //	- Always do it against the x-axis for simplicity.
-    //		1. Grab vector from cuePosition to whiteBallPosition.
-    //		2. Normalise the vector.
-    //		3. angleDegrees = glm::degrees(-Cos(dot product))
-    //		4. m_cue->setOrientation(angleDegrees)
-
-    return m_cueMatrix = glm::lookAt(cuePosition, whiteBallPosition, up);
-  };
-
-protected:
+  bool clockwise = true;
   bool isCueOnTable = false;
 
   glm::mat3 m_cueMatrix = glm::mat3(1.0f);
   glm::vec3 m_front = glm::vec3(0.0f);
   glm::vec3 m_right = glm::vec3(0.0f);
   float m_speed = 20.0f;
-  // float m_sensitivity = 10.0f; // Mouse Sensitivity
 
   // Scene Variables
   PhysicsScene* m_poolTableScene = new PhysicsScene();

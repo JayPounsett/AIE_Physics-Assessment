@@ -7,19 +7,19 @@ PoolTableGame::~PoolTableGame() {}
 
 void PoolTableGame::update(float deltaTime, aie::Input* input)
 {
-  //getCueMatrix();
+  // getCueMatrix();
   getCue()->drawCueAimLine();
-  //this->playerInput(deltaTime, input);
+  // this->playerInput(deltaTime, input);
   this->updateInput(deltaTime, input);
   this->updateScore();
- 
+
   if (hasBallVelocity() && isCueOnTable)
   {
     m_cue->setVelocity(glm::vec2(0, 0));
     m_cue->setPosition(m_cueOffTablePosition);
     isCueOnTable = false;
   }
-  
+
   if (!hasBallVelocity() && !isCueOnTable)
   {
     glm::vec2 whiteBallPos = m_whiteBall->getPosition();
@@ -140,11 +140,10 @@ void PoolTableGame::setupPoolTableGame(PhysicsScene* physicsScene)
 #pragma region Setup Cue
   // Offset of cue from the white ball
   m_cueOffset = glm::vec2(m_cueExtents.x + m_ballRadius, 0.0f);
-  
+
   // Setup cue position
   m_cuePosition = glm::vec2(
-    m_whiteBall->getPosition().x + m_cueOffset.x,
-    m_whiteBall->getPosition().y);
+    m_whiteBall->getPosition().x + m_cueOffset.x, m_whiteBall->getPosition().y);
 
   // Setup cue
   m_cue = new Box(
@@ -231,6 +230,29 @@ void PoolTableGame::setupPoolTableGame(PhysicsScene* physicsScene)
 }
 #pragma endregion Setup Pool Table
 
+float PoolTableGame::getAngleBetweenVectors(glm::vec2 v1, glm::vec2 v2)
+{
+  glm::vec2 v1Norm = glm::normalize(v1);
+  glm::vec2 v2Norm = glm::normalize(v2);
+  float dot = glm::dot(v1Norm, v2Norm);
+  float angle = glm::acos(dot);
+  return angle;
+}
+
+bool PoolTableGame::hasBallVelocity()
+{
+  for (auto ball : m_balls)
+  {
+    if (
+      glm::abs(ball->getVelocity().x) > 0.5f ||
+      glm::abs(ball->getVelocity().y) > 0.5f)
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
 #pragma region Scoreboard
 void PoolTableGame::drawScoreBoard(aie::Renderer2D* renderer, aie::Font* font)
 {
@@ -246,96 +268,140 @@ void PoolTableGame::updateScore()
   // TODO: Increase score when a coloured ball sinks or decreases when white
   // sinks
 }
+
+void PoolTableGame::updateCueVectors()
+{ // Store front vector
+  this->m_front =
+    glm::vec3(getCue()->getFacing().x, getCue()->getFacing().y, 0.0f);
+  this->m_cuePosition = glm::vec2(getCueTipPosition().x, getCueTipPosition().y);
+}
+
+void PoolTableGame::updateKeyboardInput(
+  const float& deltaTime, aie::Input* input)
+{
+  if (this->m_cueAngle > 360.0f || this->m_cueAngle < -360.0f)
+  {
+    this->m_cueAngle = 0.0f;
+  }
+
+  if (input->isKeyDown(aie::INPUT_KEY_W))
+  {
+    // Check if the cue is at the ball, stop input if it is
+    if (
+      m_cue->getPosition().x <=
+      (m_whiteBall->getPosition().x + m_ballRadius) + m_cueExtents.x)
+    {
+      return;
+    }
+
+    m_cuePosition = m_cue->getPosition();
+
+    m_cuePosition +=
+      glm::vec2(getCue()->getFacing().x, getCue()->getFacing().y) * m_speed *
+      deltaTime;
+    m_cue->setPosition(m_cuePosition);
+  }
+  if (input->isKeyDown(aie::INPUT_KEY_S))
+  {
+    // Check if the cue is at it's max distance, stop input if it is
+    if (
+      m_cue->getPosition().x >= (m_whiteBall->getPosition().x + m_ballRadius) +
+                                  m_cueExtents.x + m_cueMaxDistance)
+    {
+      return;
+    }
+
+    m_cuePosition = m_cue->getPosition();
+
+    m_cuePosition -=
+      glm::vec2(getCue()->getFacing().x, getCue()->getFacing().y) * m_speed *
+      deltaTime;
+    m_cue->setPosition(m_cuePosition);
+  }
+
+  if (input->isKeyDown(aie::INPUT_KEY_A))
+  {
+    m_cueAngle += 1 * m_speed * deltaTime;
+    m_cue->setOrientation(m_cueAngle);
+    // The above rotates the cue left around it's own position.
+    // This should be around the white ball's position.
+
+    // rotateCue(false);
+  }
+  if (input->isKeyDown(aie::INPUT_KEY_D))
+  {
+    m_cueAngle -= 1 * m_speed * deltaTime;
+    m_cue->setOrientation(m_cueAngle);
+    // The above rotates the cue right around it's own position.
+    // This should be around the white ball's position.
+
+
+    // rotateCue(true);
+  }
+
+  if (input->isKeyDown(aie::INPUT_KEY_SPACE))
+  {
+    m_cuePosition = m_cue->getPosition();
+    glm::vec2 whiteBallPos = m_whiteBall->getPosition();
+
+    glm::vec2 cueVelocity = glm::vec2(m_cuePosition - whiteBallPos);
+
+    m_cue->setVelocity(-cueVelocity * 2.0f);
+
+    /*m_cue->applyForce(
+      -m_cuePosition,
+      whiteBallPos);*/
+  }
+
+  // Debug scoreboard by pressing Q
+  if (input->isKeyDown(aie::INPUT_KEY_Q))
+  {
+    m_score += 1;
+  }
+}
 #pragma endregion Scoreboard
 
-#pragma region Player Input
-//void PoolTableGame::playerInput(float deltaTime, aie::Input* input)
-//{ // TODO Setup Player Input
-//  // Not currently functioning for W/S/A/D/Space
-//
-//  if (input->isKeyDown(aie::INPUT_KEY_W))
-//  {
-//    // [ ] W: brings it back towards the ball (fine control)
-//
-//    //// Check to see if distance between cue and white ball is close to zero
-//    // if (m_cueActualDistance <= 0.01f) m_cueActualDistance = 0.0f;
-//
-//    //// Decrease distance between white ball and cue
-//    // m_cueActualDistance -=
-//    //   1.0f * deltaTime; // Should (float) actualDistance be a vector2 or a
-//    //                     // length of a vector?
-//  }
-//
-//  if (input->isKeyDown(aie::INPUT_KEY_S))
-//  {
-//    // [ ] S: increases distance between cue and ball
-//
-//    //// Check to see if max distance has been reached
-//    // if (m_cueActualDistance > m_cueMaxDistance) // Should (float)
-//    // actualDistance
-//    //                                             // be a vector2 or a length
-//    //                                             of a
-//    //                                             // vector?
-//    //   m_cueActualDistance = m_cueMaxDistance;
-//
-//    //// Increase distance between white ball and cue
-//    // m_cueActualDistance += 1.0f * deltaTime;
-//  }
-//
-//  if (input->isKeyDown(aie::INPUT_KEY_SPACE))
-//  {
-//    // [ ] Spacebar: max velocity is stored(maxV), maxDist, actualDist
-//    // [ ] Math: MaxV* actualDist / maxDist
-//
-//    // Once space bar is pressed, send the cue towards the white ball with
-//    // velocity
-//  }
-//
-//  if (input->isKeyDown(aie::INPUT_KEY_A))
-//  {
-//    // TODO: A - rotate clockwise around ball
-//    m_cueAngle = glm::degrees(m_cue->getOrientationRadians());
-//    m_cueAngle += 1.0f;
-//
-//    m_cue->setOrientation(m_cueAngle);
-//    //m_cue->setPosition(m_cue->getFacing() * deltaTime);
-//    setFacing();
-//
-//    // TODO: Cue is rotating around it's origin. I need to
-//    // m_cue->setPosition(m_cue->getFacing() * deltaTime);
-//    // rotateCue();
-//  }
-//  if (input->isKeyDown(aie::INPUT_KEY_D))
-//  {
-//    // [ ] D: rotate counter-clockwise around ball
-//    m_cueAngle = glm::degrees(m_cue->getOrientationRadians());
-//    m_cueAngle -= 1.0f;
-//
-//    m_cue->setOrientation(m_cueAngle);
-//    //m_cue->setPosition(m_cue->getFacing() * deltaTime);
-//    // rotateCue();
-//  }
-//
-//  // Debug scoreboard by pressing Q
-//  if (input->isKeyDown(aie::INPUT_KEY_Q))
-//  {
-//    m_score += 1;
-//  }
-//}
-#pragma endregion Player Input
+void PoolTableGame::rotateCue(bool clockwise)
+{
+#pragma region Psuedocode
+  // Subtract actual position from target position, then normalize it to be a
+  // unit vector. This gives the direction of the cue with regard to the white
+  // ball.
 
-//void PoolTableGame::rotateCue()
-//{
-//  // Calculate angle between cue and white ball
-//  float angle = m_cue->getOrientationRadians();
-//
-//  // Using a camera as an example:
-//  // Moving the cue left/right would be camera pitch.
-//  // 
-//  // mat4 cueMatrix
-//  // vec3 position, vec3 front, vec3 right, don't need up (set to 0)
-//  // float speed
-//  // float sensitivity (if use mouse)
-//  // 
-//  // glm::mat4 getCueMatrix(){ this->cueMatrix = this->position, this->position + this->front, this->right, 0.0f); }
-//}
+  // Direction = normalized(whiteBall - cue)
+  // Angle Between Two Vectors
+  //
+
+#pragma endregion Psuedocode
+
+  auto cuePosition = m_cue->getPosition();
+  auto whiteBallPosition = m_whiteBall->getPosition();
+  auto cueFacing = m_cue->getFacing();
+
+  glm::vec2 whiteBallToCueVector = whiteBallPosition - cuePosition;
+
+  float angleDegrees = 0.0f;
+  float newAngle = 0.0f;
+
+  // Target - Origin
+  glm::vec2 directionVector = glm::normalize(whiteBallPosition - cuePosition);
+  // Returns (-1,0) therefore white ball is left of the cue (Correct)
+
+  // Find the cos(radians) between the two vectors
+  auto dotProduct = glm::dot(cueFacing, directionVector);
+
+  // Angle = -cos(dot(Vector, CueFacing))
+  newAngle = -glm::cos(dotProduct);
+  angleDegrees = glm::degrees(newAngle);
+
+  if (clockwise)
+  {
+    angleDegrees -= 1;
+  }
+  else
+  {
+    angleDegrees += 1;
+  }
+
+  m_cue->setOrientation(angleDegrees);
+}

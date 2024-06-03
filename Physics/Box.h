@@ -51,11 +51,7 @@ public:
   glm::vec2 getExtents() const { return m_extents; }
   glm::vec2 getPosition() const { return m_position; }
   // Get the x-axis facing of the box
-  glm::vec2 getFacing()
-  {
-    return glm::vec2(
-      glm::cos(this->getOrientationRadians()), glm::sin(-this->getOrientationRadians()));
-  }
+  glm::vec2 getFacing();
 
   float getMoment() { return m_moment; }
 

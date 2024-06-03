@@ -137,4 +137,19 @@ void Box::drawCueAimLine()
 
   aie::Gizmos::add2DLine(cueTipPosition, cueAimLineEnd, glm::vec4(1, 1, 1, 1));
 }
+glm::vec2 Box::getFacing()
+{
+  float radians = this->getOrientationRadians();
+  // Starting value of 3.1459274 (cue is pointing to the left)
+
+  float xValue = 0.0f;
+  float yValue = 0.0f;
+
+  xValue = glm::cos(radians); // Should and does return: -1
+  yValue = glm::sin(-radians); // Should return 0, returning 8.74227766e-08
+
+  return glm::vec2(xValue, yValue);
+  // Should return (-1, 0)
+  // Returned result (-1, 8.74227766e-08)
+  }
 #pragma endregion Cue Aiming Line
