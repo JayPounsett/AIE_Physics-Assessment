@@ -32,78 +32,56 @@ public:
   void update(float deltaTime, aie::Input* input);
   void draw(aie::Renderer2D* renderer, aie::Font* font);
 
+  // Set up the pool table game with objects
   void setupPoolTableGame(PhysicsScene* physicsScene);
 
-  // Getters
-  Box* getCue() { return m_cue; }
-  glm::vec2 getPosition() const { return this->m_cuePosition; }
-  
-  /// <summary>
-  /// Used camera tutorial, not currently in use as not finalised
-  /// </summary>
-  /// <returns></returns>
+  // Drawing the score board
+  void drawScoreBoard(aie::Renderer2D* renderer, aie::Font* font);
+
+  // Update score when balls sunk
+  void updateScore();
+
+#pragma region Getters
+  // Get cue tip position
   glm::vec2 getCueTipPosition()
   {
     return m_cueTipPosition = glm::vec2(
-             this->getPosition().x - m_cueExtents.x, this->getPosition().y);
+             m_cue->getPosition().x - m_cueExtents.x, m_cue->getPosition().y);
   }
-  float getAngleBetweenVectors(glm::vec2 v1, glm::vec2 v2);
 
+  // Calculate the angle between two vectors
+  float getAngleBetweenVectors(glm::vec2 v1, glm::vec2 v2);
+#pragma endregion Getters
+
+  // Check if balls are moving
   bool hasBallVelocity();
-  void drawScoreBoard(aie::Renderer2D* renderer, aie::Font* font);
-  void updateScore();
 
 protected:
-  // Keyboard inputs
+  // Function to handle keyboard inputs
   void gameInput(
     const float& deltaTime, aie::Input* input, Box* box, Sphere* sphere);
 
 protected:
-  bool m_sunkWhiteBall = false;
-  bool clockwise = true;
+  // Booleans
   bool isCueOnTable = false;
   bool wasSpacePressed = false;
+  bool m_sunkWhiteBall = false;
 
-  float m_cueStrength = 300.0f;
-  glm::mat3 m_cueStickRotationMatrix = glm::mat3(1.0f);
-  
-  // Scene Variables
+#pragma region Scene Variables
   PhysicsScene* m_poolTableScene = new PhysicsScene();
   glm::vec2 m_gravity = glm::vec2(0, 0);
   float m_timeStep = 0.01f;
+#pragma endregion Scene Variables
 
-  // Global Variables
+#pragma region Score Board Variables
+  // Score Board Variables
   std::string m_scoreBoardScore;
   int m_score = 0;
-  const glm::vec2 m_zeroVelocity = glm::vec2(0, 0);
+#pragma endregion Score Board Variables
 
-  // Cuestick
-  Box* m_cue = nullptr;
-  glm::vec2 m_cuePosition{};
-  glm::vec2 m_cueTipPosition{};
-  glm::vec2 m_cueOffset{}; // Offset of cue from white ball
-  glm::vec2 m_cueOffTablePosition = glm::vec2(
-    200, 200); // Location to put cue off the table when balls are in motion
-
-  glm::vec2 m_cueExtents = glm::vec2(20, 1); // Size of cue stick
-  const float m_cueMass = 5.0f;
-  const float m_cueElasticity = 0.1f;
-  const float m_cueMaxDistance = 20.0f;
-  const glm::vec2 m_cueMaxVelocity = glm::vec2(10, 10);
-
-  // Ball Variables
-  const float m_ballMass = 1.0f;
-  const float m_ballRadius = 4.5f;
-  const float m_ballElasticity = 0.4f;
-
-  // Ball Start Position Constants
-  const glm::vec2 m_whiteBallStartPos = glm::vec2(50, 0);
-  const glm::vec2 m_redBallStartPos = glm::vec2(-40, 0);
-  const glm::vec2 m_greenBallStartPos = glm::vec2(-48, 5);
-  const glm::vec2 m_blueBallStartPos = glm::vec2(-48, -5);
-  const glm::vec2 m_yellowBallStartPos = glm::vec2(-56, 10);
-  const glm::vec2 m_cyanBallStartPos = glm::vec2(-56, -0);
-  const glm::vec2 m_magentaBallStartPos = glm::vec2(-56, -10);
+#pragma region Game Objects
+  // Cue Stick
+  Box* m_cue{};
 
   // Balls
   std::vector<Sphere*> m_balls;
@@ -121,18 +99,6 @@ protected:
   Plane* m_tableEdgeTop{};
   Plane* m_tableEdgeBottom{};
 
-  // Pocket Variables
-  std::vector<Sphere*> m_pockets;
-  const glm::vec2 m_pocketTopLeftPosition = glm::vec2(-95, 52);
-  const glm::vec2 m_pocketTopMidPosition = glm::vec2(0, 52);
-  const glm::vec2 m_pocketTopRightPosition = glm::vec2(95, 52);
-  const glm::vec2 m_pocketBottomLeftPosition = glm::vec2(-95, -52);
-  const glm::vec2 m_pocketBottomMidPosition = glm::vec2(0, -52);
-  const glm::vec2 m_pocketBottomRightPosition = glm::vec2(95, -52);
-  const float m_pocketElasticity = 0.0f;
-  const float m_pocketMass = 100.0f;
-  const float m_pocketRadius = 6.0f;
-
   // Ball Pockets
   Sphere* m_pocketTopLeft{};
   Sphere* m_pocketTopMid{};
@@ -140,9 +106,14 @@ protected:
   Sphere* m_pocketBottomLeft{};
   Sphere* m_pocketBottomMid{};
   Sphere* m_pocketBottomRight{};
+#pragma endregion Game Objects
 
-  // Colours
-  const glm::vec4 m_colourWhite = glm::vec4(1, 1, 1, 1);
+#pragma region Game Object Variables
+  // Common Variables
+  const glm::vec2 m_zeroVelocity = glm::vec2(0, 0);
+
+  // Colour Constants
+  const glm::vec4 m_colourWhite = glm::vec4(1, 1, 1, 1); // Cue Ball
   const glm::vec4 m_colourBlack = glm::vec4(0, 0, 0, 1); // Ball Pockets
   const glm::vec4 m_colourBrown =
     glm::vec4(0.55, 0.27, 0.07, 1); // Cuestick, saddlebrown
@@ -152,4 +123,49 @@ protected:
   const glm::vec4 m_colourYellow = glm::vec4(1, 1, 0, 1);
   const glm::vec4 m_colourCyan = glm::vec4(0, 1, 1, 1);
   const glm::vec4 m_colourMagenta = glm::vec4(1, 0, 1, 1);
+
+  // Cuestick Variables
+  glm::vec2 m_cueExtents = glm::vec2(20, 1); // Size of cue stick
+  glm::mat3 m_cueStickRotationMatrix = glm::mat3(1.0f);
+  glm::vec2 m_cuePosition{};
+  glm::vec2 m_cueTipPosition{};
+  glm::vec2 m_cueOffset{}; // Offset of cue from white ball
+  glm::vec2 m_cueOffTablePosition = glm::vec2(
+    200, 200); // Location to put cue off the table when balls are in motion
+
+  const float m_cueMass = 5.0f;
+  const float m_cueElasticity = 0.1f;
+  const float m_cueStrength = 300.0f;
+  const float m_cueMaxDistance = 20.0f;
+
+  // Ball Variables
+  const float m_ballMass = 1.0f;
+  const float m_ballRadius = 4.5f;
+  const float m_ballElasticity = 0.4f;
+
+  // Pocket Variables
+  std::vector<Sphere*> m_pockets;
+  const float m_pocketElasticity = 0.0f;
+  const float m_pocketMass = 100.0f;
+  const float m_pocketRadius = 6.0f;
+#pragma endregion Game Object Variables
+
+#pragma region Game Object Starting Positions
+  // Balls
+  const glm::vec2 m_whiteBallStartPos = glm::vec2(50, 0);
+  const glm::vec2 m_redBallStartPos = glm::vec2(-40, 0);
+  const glm::vec2 m_greenBallStartPos = glm::vec2(-48, 5);
+  const glm::vec2 m_blueBallStartPos = glm::vec2(-48, -5);
+  const glm::vec2 m_yellowBallStartPos = glm::vec2(-56, 10);
+  const glm::vec2 m_cyanBallStartPos = glm::vec2(-56, -0);
+  const glm::vec2 m_magentaBallStartPos = glm::vec2(-56, -10);
+
+  // Pockets
+  const glm::vec2 m_pocketTopLeftPosition = glm::vec2(-95, 52);
+  const glm::vec2 m_pocketTopMidPosition = glm::vec2(0, 52);
+  const glm::vec2 m_pocketTopRightPosition = glm::vec2(95, 52);
+  const glm::vec2 m_pocketBottomLeftPosition = glm::vec2(-95, -52);
+  const glm::vec2 m_pocketBottomMidPosition = glm::vec2(0, -52);
+  const glm::vec2 m_pocketBottomRightPosition = glm::vec2(95, -52);
+#pragma endregion Game Object Starting Positions
 };
