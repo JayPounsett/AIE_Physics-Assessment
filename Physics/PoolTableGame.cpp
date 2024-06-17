@@ -1,17 +1,18 @@
 #include "PoolTableGame.h"
 
+#include <iostream>
+
 #include "Application.h"
 #include "PhysicsScene.h"
-#include <iostream>
 
 PoolTableGame::~PoolTableGame() {}
 
 void PoolTableGame::update(float deltaTime, aie::Input* input)
 {
   // getCueMatrix();
-  getCue()->drawCueAimLine();
-  // this->playerInput(deltaTime, input);
-  this->updateInput(deltaTime, input);
+  //getCue()->drawCueAimLine();
+
+  this->gameInput(deltaTime, input, m_cue, m_whiteBall);
   this->updateScore();
 
   if (hasBallVelocity() && isCueOnTable)
@@ -28,7 +29,9 @@ void PoolTableGame::update(float deltaTime, aie::Input* input)
     m_cue->setPosition(glm::vec2(
       whiteBallPos.x + m_ballRadius + m_cueExtents.x, whiteBallPos.y));
 
+    m_cue->setOrientation(-180);
     isCueOnTable = true;
+    wasSpacePressed = false;
   }
 }
 
@@ -270,16 +273,54 @@ void PoolTableGame::updateScore()
   // sinks
 }
 
-void PoolTableGame::updateCueVectors()
-{ // Store front vector
-  this->m_front =
-    glm::vec3(getCue()->getFacing().x, getCue()->getFacing().y, 0.0f);
-  this->m_cuePosition = glm::vec2(getCueTipPosition().x, getCueTipPosition().y);
-}
-
-void PoolTableGame::updateKeyboardInput(
-  const float& deltaTime, aie::Input* input)
+void PoolTableGame::gameInput(
+  const float& deltaTime, aie::Input* input, Box* box, Sphere* sphere)
 {
+  // Get the current position of the box and sphere
+  glm::vec2 boxPosition = box->getPosition();
+  glm::vec2 spherePosition = sphere->getPosition();
+
+  // Calculate the direction from box to sphere
+  glm::vec2 direction = glm::normalize(spherePosition - boxPosition);
+
+  // Calculate the perpendicular direction for strafing
+  glm::vec2 rotationDirection = glm::vec2(-direction.y, direction.x);
+
+  // Calculate the up vector for the lookAt matrix
+  glm::vec2 up = glm::vec2(0, 1);
+
+  // Calculate the lookAt matrix
+  glm::mat4 lookAtMatrix = glm::lookAt(
+    glm::vec3(boxPosition.x, boxPosition.y, 0),
+    glm::vec3(spherePosition.x, spherePosition.y, 0),
+    glm::vec3(0, 0, 1));
+
+  // Extract the rotation matrix from the lookAt matrix
+  m_cueStickRotationMatrix = glm::mat3(lookAtMatrix);
+
+  // Calculate the new orientation based on the rotation matrix
+  float newOrientation = glm::degrees(
+    atan2(m_cueStickRotationMatrix[1][0], m_cueStickRotationMatrix[0][0]));
+
+  // Update the orientation of the box
+  box->setOrientation(newOrientation + 90.0f);
+
+  // Define movement speed for strafing
+  float strafeSpeed = 100.0f * deltaTime;
+
+  // Move left when pressing A
+  if (input->isKeyDown(aie::INPUT_KEY_A))
+  {
+    box->setPosition(box->getPosition() - rotationDirection * strafeSpeed);
+  }
+
+  // Move right when pressing D
+  if (input->isKeyDown(aie::INPUT_KEY_D))
+  {
+    box->setPosition(box->getPosition() + rotationDirection * strafeSpeed);
+  }
+
+  // Move toward sphere when pressing W
   if (input->isKeyDown(aie::INPUT_KEY_W))
   {
     // Check if the cue is at the ball, stop input if it is
@@ -289,14 +330,10 @@ void PoolTableGame::updateKeyboardInput(
     {
       return;
     }
-
-    m_cuePosition = m_cue->getPosition();
-
-    m_cuePosition +=
-      glm::vec2(getCue()->getFacing().x, getCue()->getFacing().y) * m_speed *
-      deltaTime;
-    m_cue->setPosition(m_cuePosition);
+    box->setPosition(box->getPosition() + direction * strafeSpeed);
   }
+
+  // Move away from sphere when pressing S
   if (input->isKeyDown(aie::INPUT_KEY_S))
   {
     // Check if the cue is at it's max distance, stop input if it is
@@ -306,47 +343,21 @@ void PoolTableGame::updateKeyboardInput(
     {
       return;
     }
-
-    m_cuePosition = m_cue->getPosition();
-
-    m_cuePosition -=
-      glm::vec2(getCue()->getFacing().x, getCue()->getFacing().y) * m_speed *
-      deltaTime;
-    m_cue->setPosition(m_cuePosition);
-  }
-
-  if (input->isKeyDown(aie::INPUT_KEY_A))
-  {
-    m_cueAngle += 1 * m_speed * deltaTime;
-    m_cue->setOrientation(m_cueAngle);
-    // The above rotates the cue left around it's own position.
-    // This should be around the white ball's position.
-
-    //rotateCue(false);
-  }
-  if (input->isKeyDown(aie::INPUT_KEY_D))
-  {
-    m_cueAngle -= 1 * m_speed * deltaTime;
-    m_cue->setOrientation(m_cueAngle);
-
-    // The above rotates the cue right around it's own position.
-    // This should be around the white ball's position.
-
-    //rotateCue(true);
+    box->setPosition(box->getPosition() - direction * strafeSpeed);
   }
 
   if (input->isKeyDown(aie::INPUT_KEY_SPACE))
   {
+    if (wasSpacePressed) return;
+
+    wasSpacePressed = true;
+
     m_cuePosition = m_cue->getPosition();
     glm::vec2 whiteBallPos = m_whiteBall->getPosition();
 
-    glm::vec2 cueVelocity = glm::vec2(m_cuePosition - whiteBallPos);
+    glm::vec2 cueVelocity = glm::vec2(getCueTipPosition() - whiteBallPos);
 
-    m_cue->setVelocity(-cueVelocity * 2.0f);
-
-    /*m_cue->applyForce(
-      -m_cuePosition,
-      whiteBallPos);*/
+    m_cue->setVelocity(-cueVelocity * m_cueStrength);
   }
 
   // Debug scoreboard by pressing Q
@@ -357,41 +368,41 @@ void PoolTableGame::updateKeyboardInput(
 }
 #pragma endregion Scoreboard
 
-void PoolTableGame::rotateCue(bool clockwise)
-{
-  auto cuePosition = m_cue->getPosition();
-  auto whiteBallPosition = m_whiteBall->getPosition();
-  auto cueFacing = m_cue->getFacing();
-  auto whiteBallToCueVector = whiteBallPosition - cuePosition;
-
-  auto vector = glm::normalize(whiteBallPosition - cuePosition);
-
-  auto dotProduct = glm::dot(cueFacing, vector);
-  auto newAngle = glm::acos(dotProduct);
-  auto newAngleInDegrees = glm::degrees(newAngle);
-
-  //if (clockwise)
-  //{
-  //  newAngleInDegrees -= 1;
-  //}
-  //else
-  //{
-  //  newAngleInDegrees += 1;
-  //}
-
-  std::cout << "-----------------" << std::endl;
-  std::cout << "Cue Position: (" << cuePosition.x << ", " << cuePosition.y
-            << ")" << std::endl;
-  std::cout << "White Ball Position: (" << whiteBallPosition.x << ", "
-            << whiteBallPosition.y << ")" << std::endl;
-  std::cout << "White Ball to Cue Vector: (" << whiteBallToCueVector.x << ", "
-            << whiteBallToCueVector.y << ")" << std::endl;
-  std::cout << "Cue Facing: (" << cueFacing.x << ", " << cueFacing.y << ")"
-            << std::endl;
-  std::cout << "DotProduct: " << dotProduct << std::endl;
-  std::cout << "Angle (Radians): " << newAngle << std::endl;
-  std::cout << "Angle (Degrees): " << newAngleInDegrees << std::endl;
-  std::cout << "-----------------" << std::endl;
-
-  m_cue->setOrientation(newAngleInDegrees);
-}
+//void PoolTableGame::rotateCue(bool clockwise)
+//{
+//  auto cuePosition = m_cue->getPosition();
+//  auto whiteBallPosition = m_whiteBall->getPosition();
+//  auto cueFacing = m_cue->getFacing();
+//  auto whiteBallToCueVector = whiteBallPosition - cuePosition;
+//
+//  auto vector = glm::normalize(whiteBallPosition - cuePosition);
+//
+//  auto dotProduct = glm::dot(cueFacing, vector);
+//  auto newAngle = glm::acos(dotProduct);
+//  auto newAngleInDegrees = glm::degrees(newAngle);
+//
+//  // if (clockwise)
+//  //{
+//  //   newAngleInDegrees -= 1;
+//  // }
+//  // else
+//  //{
+//  //   newAngleInDegrees += 1;
+//  // }
+//
+//  std::cout << "-----------------" << std::endl;
+//  std::cout << "Cue Position: (" << cuePosition.x << ", " << cuePosition.y
+//            << ")" << std::endl;
+//  std::cout << "White Ball Position: (" << whiteBallPosition.x << ", "
+//            << whiteBallPosition.y << ")" << std::endl;
+//  std::cout << "White Ball to Cue Vector: (" << whiteBallToCueVector.x << ", "
+//            << whiteBallToCueVector.y << ")" << std::endl;
+//  std::cout << "Cue Facing: (" << cueFacing.x << ", " << cueFacing.y << ")"
+//            << std::endl;
+//  std::cout << "DotProduct: " << dotProduct << std::endl;
+//  std::cout << "Angle (Radians): " << newAngle << std::endl;
+//  std::cout << "Angle (Degrees): " << newAngleInDegrees << std::endl;
+//  std::cout << "-----------------" << std::endl;
+//
+//  m_cue->setOrientation(newAngleInDegrees);
+//}

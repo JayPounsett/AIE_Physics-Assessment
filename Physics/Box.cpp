@@ -120,23 +120,23 @@ void Box::draw()
   aie::Gizmos::add2DTri(p1, p4, p3, m_colour);
 }
 
-#pragma region Cue Aiming Line
-void Box::drawCueAimLine()
-{
-  // TODO: Draw cue aiming line
-  // TODO: Line not updating as cue is moved
-  // TODO: Add in distance variable for when cue is moved forward/back to show
-  // how far it may move
-
-  // Store cue tip position
-  glm::vec2 cueTipPosition = glm::vec2(
-    this->getPosition().x - this->getExtents().x, this->getPosition().y);
-
-  // Vector for the line's end point
-  glm::vec2 cueAimLineEnd = glm::vec2(cueTipPosition.x - 100, cueTipPosition.y);
-
-  aie::Gizmos::add2DLine(cueTipPosition, cueAimLineEnd, glm::vec4(1, 1, 1, 1));
-}
+//#pragma region Cue Aiming Line
+//void Box::drawCueAimLine()
+//{
+//  // TODO: Draw cue aiming line
+//  // TODO: Line not updating as cue is moved
+//  // TODO: Add in distance variable for when cue is moved forward/back to show
+//  // how far it may move
+//
+//  // Store cue tip position
+//  glm::vec2 cueTipPosition = glm::vec2(
+//    this->getPosition().x - this->getExtents().x, this->getPosition().y);
+//
+//  // Vector for the line's end point
+//  glm::vec2 cueAimLineEnd = glm::vec2(cueTipPosition.x - 100, cueTipPosition.y);
+//
+//  aie::Gizmos::add2DLine(cueTipPosition, cueAimLineEnd, glm::vec4(1, 1, 1, 1));
+//}
 glm::vec2 Box::getFacing()
 {
   float radians = this->getOrientationRadians();

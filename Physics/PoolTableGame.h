@@ -37,18 +37,11 @@ public:
   // Getters
   Box* getCue() { return m_cue; }
   glm::vec2 getPosition() const { return this->m_cuePosition; }
-  glm::mat4 getCueMatrix()
-  {
-    this->updateCueVectors();
-
-    glm::vec3 positionVec3 =
-      glm::vec3(this->getCueTipPosition().x, this->getCueTipPosition().y, 0.0f);
-
-    this->m_cueMatrix = glm::lookAt(
-      positionVec3, positionVec3 + this->m_front, glm::vec3(0, 0, 1));
-
-    return this->m_cueMatrix;
-  }
+  
+  /// <summary>
+  /// Used camera tutorial, not currently in use as not finalised
+  /// </summary>
+  /// <returns></returns>
   glm::vec2 getCueTipPosition()
   {
     return m_cueTipPosition = glm::vec2(
@@ -59,28 +52,20 @@ public:
   bool hasBallVelocity();
   void drawScoreBoard(aie::Renderer2D* renderer, aie::Font* font);
   void updateScore();
-  void rotateCue(bool clockwise);
 
 protected:
-  void updateInput(const float& deltaTime, aie::Input* input)
-  {
-    this->updateKeyboardInput(deltaTime, input);
-  };
-
   // Keyboard inputs
-  void updateKeyboardInput(const float& deltaTime, aie::Input* input);
-  
-  void updateCueVectors();
+  void gameInput(
+    const float& deltaTime, aie::Input* input, Box* box, Sphere* sphere);
 
 protected:
   bool clockwise = true;
   bool isCueOnTable = false;
+  bool wasSpacePressed = false;
 
-  glm::mat3 m_cueMatrix = glm::mat3(1.0f);
-  glm::vec3 m_front = glm::vec3(0.0f);
-  glm::vec3 m_right = glm::vec3(0.0f);
-  float m_speed = 20.0f;
-
+  float m_cueStrength = 5.0f;
+  glm::mat3 m_cueStickRotationMatrix = glm::mat3(1.0f);
+  
   // Scene Variables
   PhysicsScene* m_poolTableScene = new PhysicsScene();
   glm::vec2 m_gravity = glm::vec2(0, 0);
@@ -105,7 +90,6 @@ protected:
   const float m_cueElasticity = 0.1f;
   const float m_cueMaxDistance = 20.0f;
   const glm::vec2 m_cueMaxVelocity = glm::vec2(10, 10);
-  float m_cueActualDistance = 0.0f;
 
   // Ball Variables
   const float m_ballMass = 1.0f;

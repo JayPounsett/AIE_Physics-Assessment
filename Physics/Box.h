@@ -45,7 +45,7 @@ public:
     glm::vec2& edgeNormal);
   virtual void draw();
 
-  void drawCueAimLine();
+  //void drawCueAimLine();
 
   glm::vec4 getColour() const { return m_colour; }
   glm::vec2 getExtents() const { return m_extents; }
