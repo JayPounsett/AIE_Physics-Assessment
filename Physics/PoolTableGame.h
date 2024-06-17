@@ -59,11 +59,12 @@ protected:
     const float& deltaTime, aie::Input* input, Box* box, Sphere* sphere);
 
 protected:
+  bool m_sunkWhiteBall = false;
   bool clockwise = true;
   bool isCueOnTable = false;
   bool wasSpacePressed = false;
 
-  float m_cueStrength = 5.0f;
+  float m_cueStrength = 300.0f;
   glm::mat3 m_cueStickRotationMatrix = glm::mat3(1.0f);
   
   // Scene Variables
@@ -85,7 +86,6 @@ protected:
     200, 200); // Location to put cue off the table when balls are in motion
 
   glm::vec2 m_cueExtents = glm::vec2(20, 1); // Size of cue stick
-  float m_cueAngle = 0.0f;
   const float m_cueMass = 5.0f;
   const float m_cueElasticity = 0.1f;
   const float m_cueMaxDistance = 20.0f;
@@ -93,7 +93,7 @@ protected:
 
   // Ball Variables
   const float m_ballMass = 1.0f;
-  const float m_ballRadius = 4.0f;
+  const float m_ballRadius = 4.5f;
   const float m_ballElasticity = 0.4f;
 
   // Ball Start Position Constants
@@ -131,7 +131,7 @@ protected:
   const glm::vec2 m_pocketBottomRightPosition = glm::vec2(95, -52);
   const float m_pocketElasticity = 0.0f;
   const float m_pocketMass = 100.0f;
-  const float m_pocketRadius = 7.0f;
+  const float m_pocketRadius = 6.0f;
 
   // Ball Pockets
   Sphere* m_pocketTopLeft{};

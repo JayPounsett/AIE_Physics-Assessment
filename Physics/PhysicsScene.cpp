@@ -196,7 +196,8 @@ bool PhysicsScene::sphere2Sphere(PhysicsObject* obj1, PhysicsObject* obj2) {
     float dist = glm::length(sphere1->getPosition() - sphere2->getPosition());
 
     float penetration = sphere1->getRadius() + sphere2->getRadius() - dist;
-    if (penetration > 0) {
+    if (penetration >= 0)
+    {
       sphere1->resolveCollision(
         sphere2,
         (sphere1->getPosition() + sphere2->getPosition()) * 0.5f,

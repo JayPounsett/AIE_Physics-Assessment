@@ -9,30 +9,54 @@ PoolTableGame::~PoolTableGame() {}
 
 void PoolTableGame::update(float deltaTime, aie::Input* input)
 {
-  // getCueMatrix();
-  //getCue()->drawCueAimLine();
-
   this->gameInput(deltaTime, input, m_cue, m_whiteBall);
   this->updateScore();
 
+  // If white ball sunk, move it off the table
+  if (m_sunkWhiteBall)
+  {
+    // Move white ball off the table
+    m_whiteBall->setPosition(glm::vec2(-200, -200));
+    m_whiteBall->setVelocity(m_zeroVelocity);
+    m_whiteBall->setAngularVelocity(0.0f);
+    m_whiteBall->setOrientation(0);
+  }
+
+  // Move the cue off the table until the balls finish moving
   if (hasBallVelocity() && isCueOnTable)
   {
     m_cue->setVelocity(glm::vec2(0, 0));
+    m_cue->setAngularVelocity(0);
     m_cue->setPosition(m_cueOffTablePosition);
     isCueOnTable = false;
   }
 
-  if (!hasBallVelocity() && !isCueOnTable)
+  #pragma region Checks to move the white ball and/or cue back to the table
+  // Move the white ball back to the table
+  if (!hasBallVelocity() && m_sunkWhiteBall)
+  {
+    m_whiteBall->setPosition(m_whiteBallStartPos);
+    m_whiteBall->setVelocity(m_zeroVelocity);
+
+    m_sunkWhiteBall = false;
+  }
+
+  // When the balls finish moving, bring the cue back
+  else if (!hasBallVelocity() && !isCueOnTable && !m_sunkWhiteBall)
   {
     glm::vec2 whiteBallPos = m_whiteBall->getPosition();
 
-    m_cue->setPosition(glm::vec2(
-      whiteBallPos.x + m_ballRadius + m_cueExtents.x, whiteBallPos.y));
+    m_cuePosition = glm::vec2(
+      m_whiteBall->getPosition().x + m_cueOffset.x,
+      m_whiteBall->getPosition().y);
 
+    m_cue->setPosition(m_cuePosition);
     m_cue->setOrientation(-180);
+
     isCueOnTable = true;
     wasSpacePressed = false;
   }
+  #pragma endregion Checks to move the white ball and/or cue back to the table
 }
 
 void PoolTableGame::draw(aie::Renderer2D* renderer, aie::Font* font)
@@ -104,6 +128,7 @@ void PoolTableGame::setupPoolTableGame(PhysicsScene* physicsScene)
     m_colourBlack);
 
   // Setup Pockets as kinematic
+  m_pocketTopLeft->setKinematic(true);
   m_pocketTopMid->setKinematic(true);
   m_pocketTopRight->setKinematic(true);
   m_pocketBottomLeft->setKinematic(true);
@@ -138,6 +163,7 @@ void PoolTableGame::setupPoolTableGame(PhysicsScene* physicsScene)
     m_colourWhite);
 
   // Add white ball to scene
+  m_balls.push_back(m_whiteBall);
   physicsScene->addActor(m_whiteBall);
 #pragma endregion Setup White Ball
 
@@ -214,8 +240,7 @@ void PoolTableGame::setupPoolTableGame(PhysicsScene* physicsScene)
     m_ballElasticity,
     m_colourMagenta);
 
-  // Add balls into the balls vector
-  m_balls.push_back(m_whiteBall);
+  // Add coloured balls into the balls vector
   m_balls.push_back(m_redBall);
   m_balls.push_back(m_greenBall);
   m_balls.push_back(m_blueBall);
@@ -257,7 +282,6 @@ bool PoolTableGame::hasBallVelocity()
   return false;
 }
 
-#pragma region Scoreboard
 void PoolTableGame::drawScoreBoard(aie::Renderer2D* renderer, aie::Font* font)
 {
   // [ ] ScoreBoard: Text object that iterates when ball sunk
@@ -269,8 +293,91 @@ void PoolTableGame::drawScoreBoard(aie::Renderer2D* renderer, aie::Font* font)
 
 void PoolTableGame::updateScore()
 {
-  // TODO: Increase score when a coloured ball sinks or decreases when white
-  // sinks
+  for (auto it = m_balls.begin(); it != m_balls.end();)
+  {
+    Sphere* ball = *it;
+
+    for (auto pocket : m_pockets)
+    {
+      if (m_poolTableScene->sphere2Sphere(ball, pocket) == true)
+      {
+        if (ball->getColour() != m_colourWhite)
+        {
+          // Remove the ball from the scene
+          m_poolTableScene->removeActor(ball);
+
+          // Erase the ball from the vector
+          it = m_balls.erase(it);
+
+          // Increase the score
+          m_score += 1;
+
+          // Exit the inner loop as the ball has been removed
+          break;
+        }
+
+        if (ball->getColour() == m_colourWhite)
+        {
+          m_sunkWhiteBall = true;
+          m_score -= 1;
+        }
+      }
+    }
+
+    // Move to the next ball
+    if (it != m_balls.end())
+    {
+      ++it;
+    }
+  }
+  // for (auto ball_ptr = m_balls.begin(); ball_ptr != m_balls.end();)
+  //{
+  //   auto ball = *ball_ptr; // Dereference the pointer to get the Sphere
+  //   object
+
+  //  for (auto pocket_ptr = m_pockets.begin(); pocket_ptr != m_pockets.end();)
+  //  {
+  //    auto pocket = *pocket_ptr;
+
+  //    if (
+  //      m_poolTableScene->sphere2Sphere(ball, pocket) &&
+  //      ball->getColour() != m_colourWhite)
+  //    {
+  //      ball_ptr = m_balls.erase(ball_ptr); // Remove the ball from the vector
+  //      m_poolTableScene->removeActor(ball);
+
+  //      m_score += 1;
+  //      break;
+  //    }
+
+  //    else if (
+  //      m_poolTableScene->sphere2Sphere(ball, pocket) &&
+  //      ball->getColour() == m_colourWhite)
+  //    {
+  //      m_sunkWhiteBall = true;
+  //      break;
+  //    }
+  //    else
+  //    {
+  //      ++pocket_ptr;
+  //    }
+  //  }
+  //  ++ball_ptr;
+  //}
+
+  // if (m_sunkWhiteBall)
+  //{
+  //   //m_whiteBall->setVelocity(glm::vec2(0, 0));
+  //   m_whiteBall->setPosition(m_whiteBallStartPos);
+  //   m_sunkWhiteBall = false;
+
+  //  m_score -= 1;
+  //}
+
+  // if (m_score < 0)
+  //{
+  //   m_score = 0;
+  // }
 }
 
 void PoolTableGame::gameInput(
@@ -326,7 +433,7 @@ void PoolTableGame::gameInput(
     // Check if the cue is at the ball, stop input if it is
     if (
       m_cue->getPosition().x <=
-      (m_whiteBall->getPosition().x + m_ballRadius) + m_cueExtents.x)
+      (m_whiteBall->getPosition().x + m_ballRadius + m_cueExtents.x))
     {
       return;
     }
@@ -352,12 +459,19 @@ void PoolTableGame::gameInput(
 
     wasSpacePressed = true;
 
-    m_cuePosition = m_cue->getPosition();
+    glm::vec2 cuePosition = m_cue->getPosition();
     glm::vec2 whiteBallPos = m_whiteBall->getPosition();
 
-    glm::vec2 cueVelocity = glm::vec2(getCueTipPosition() - whiteBallPos);
+    float distance = glm::length(whiteBallPos - cuePosition);
+    float maxDistance = 100.0f; // Define your maximum distance here
 
-    m_cue->setVelocity(-cueVelocity * m_cueStrength);
+    // Adjust the velocity based on the distance
+    float velocityAdjustment = 1.0f - (distance / maxDistance);
+    glm::vec2 cueVelocity =
+      glm::normalize(glm::vec2(whiteBallPos - cuePosition)) *
+      (m_cueStrength * velocityAdjustment);
+
+    m_cue->setVelocity(cueVelocity);
   }
 
   // Debug scoreboard by pressing Q
@@ -366,43 +480,3 @@ void PoolTableGame::gameInput(
     m_score += 1;
   }
 }
-#pragma endregion Scoreboard
-
-//void PoolTableGame::rotateCue(bool clockwise)
-//{
-//  auto cuePosition = m_cue->getPosition();
-//  auto whiteBallPosition = m_whiteBall->getPosition();
-//  auto cueFacing = m_cue->getFacing();
-//  auto whiteBallToCueVector = whiteBallPosition - cuePosition;
-//
-//  auto vector = glm::normalize(whiteBallPosition - cuePosition);
-//
-//  auto dotProduct = glm::dot(cueFacing, vector);
-//  auto newAngle = glm::acos(dotProduct);
-//  auto newAngleInDegrees = glm::degrees(newAngle);
-//
-//  // if (clockwise)
-//  //{
-//  //   newAngleInDegrees -= 1;
-//  // }
-//  // else
-//  //{
-//  //   newAngleInDegrees += 1;
-//  // }
-//
-//  std::cout << "-----------------" << std::endl;
-//  std::cout << "Cue Position: (" << cuePosition.x << ", " << cuePosition.y
-//            << ")" << std::endl;
-//  std::cout << "White Ball Position: (" << whiteBallPosition.x << ", "
-//            << whiteBallPosition.y << ")" << std::endl;
-//  std::cout << "White Ball to Cue Vector: (" << whiteBallToCueVector.x << ", "
-//            << whiteBallToCueVector.y << ")" << std::endl;
-//  std::cout << "Cue Facing: (" << cueFacing.x << ", " << cueFacing.y << ")"
-//            << std::endl;
-//  std::cout << "DotProduct: " << dotProduct << std::endl;
-//  std::cout << "Angle (Radians): " << newAngle << std::endl;
-//  std::cout << "Angle (Degrees): " << newAngleInDegrees << std::endl;
-//  std::cout << "-----------------" << std::endl;
-//
-//  m_cue->setOrientation(newAngleInDegrees);
-//}

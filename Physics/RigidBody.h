@@ -55,9 +55,11 @@ public:
   // Not assigning value!
     this->m_orientationRadians = glm::radians(angleDegrees);
   }
+  void setOrientation(glm::mat3 matrix) { this->m_rotationMatrix = matrix; }
 
   void setPosition(glm::vec2 newPosition) { this->m_position = newPosition; }
   void setVelocity(glm::vec2 newVelocity) { this->m_velocity = newVelocity; }
+  void setAngularVelocity(float angularVelocity) { this->m_angularVelocity = angularVelocity; }
 
   // Getters
   bool isKinematic(bool state) const { return m_isKinematic; }
@@ -85,6 +87,7 @@ public:
 
 
 protected:
+  glm::mat3 m_rotationMatrix {1.0f};
   glm::vec2 m_position{0, 0};
   glm::vec2 m_velocity{0, 0};
   float m_mass = 0.1f;
